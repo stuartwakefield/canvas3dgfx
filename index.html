@@ -3,6 +3,7 @@
 	<head>
 		<title>Canvas Graphics</title>
 		<style>
+
 			body {
 				margin: 3em;
 				background: #EEE;
@@ -10,34 +11,21 @@
 				margin: 0 auto;
 				font: 1em / 1.5em Calibri, Arial, Tahoma, Verdana, sans-serif;
 			}
+
 			h1, h2 {
 				text-align: center;
 			}
+
 			canvas {
 				background: #000;
 				margin: 1em 0;
 				width: 100%;
 				display: block;
 			}
+
 		</style>
-	</head>
-	<body>
-		<h2>Basic scaled projection</h2>
-		<p>This projection simply discards the z-axis information and draws the x and y-axis coordinates for each of the model's triangles. The values are scaled from the models normalised values between -1.0 and 1.0 to the desired size in the projection space through multiplication.</p>
-		<canvas id="canvas-1"></canvas>
-		<h2>Orthographic projection</h2>
-		<canvas id="canvas-2"></canvas>
-		<h3>Cavalier projection</h3>
-		<p>z length is preserved in scale</p>
-		<canvas id="canvas-3"></canvas>
-		<h3>Cabinet projection</h3>
-		<p>z / 2</p>
-		<canvas id="canvas-4"></canvas>
-		<p>Or z * 2 / 3</p>
-		<canvas id="canvas-5"></canvas>
-		<h3>Isometric projection</h3>
-		<canvas id="canvas-6"></canvas>
 		<script>
+
 			/*function Mat4(elements) {
 
 				if (elements.length !== 16) {
@@ -167,6 +155,12 @@
 				context.stroke();
 			}
 
+		</script>
+	</head>
+	<body>
+
+		<script>
+
 			var modelVerts = [
 				new Vertex(-1.0, -1.0, -1.0), // 0 FBL
 				new Vertex( 1.0, -1.0, -1.0), // 1 FBR
@@ -189,6 +183,13 @@
 				new Polygon([modelVerts[0], modelVerts[2], modelVerts[6], modelVerts[4]]), // LEFT
 				new Polygon([modelVerts[1], modelVerts[3], modelVerts[7], modelVerts[5]])  // RIGHT
 			];
+
+		</script>
+
+		<h2>Basic scaled projection</h2>
+		<p>This projection simply discards the z-axis information and draws the x and y-axis coordinates for each of the model's triangles. The values are scaled from the models normalised values between -1.0 and 1.0 to the desired size in the projection space through multiplication.</p>
+		<canvas id="canvas-1"></canvas>
+		<script>
 
 			// Basic scaled projection discarding depth / z value
 			(function() {
@@ -219,6 +220,12 @@
 
 			}) ();
 
+		</script>
+
+		<h2>Orthographic projection</h2>
+		<canvas id="canvas-2"></canvas>
+		<script>
+
 			(function() {
 				
 				var canvas = document.getElementById('canvas-2');
@@ -229,7 +236,7 @@
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#FFFFFF';
-				
+
 				var modelSize = canvas.width / 2;
 				var scale = modelSize / 2;
 				var a = 0.2;
@@ -248,6 +255,13 @@
 				}
 
 			}) ();
+
+		</script>
+
+		<h2>Cavalier projection</h2>
+		<p>z length is preserved in scale</p>
+		<canvas id="canvas-3"></canvas>
+		<script>
 
 			(function() {
 
@@ -280,6 +294,13 @@
 
 			}) ();
 
+		</script>
+
+		<h2>Cabinet projection</h2>
+		<p>z / 2</p>
+		<canvas id="canvas-4"></canvas>
+		<script>
+
 			(function() {
 
 				var canvas = document.getElementById('canvas-4');
@@ -311,6 +332,12 @@
 
 			}) ();
 
+		</script>
+
+		<p>Or z * 2 / 3</p>
+		<canvas id="canvas-5"></canvas>
+		<script>
+
 			(function() {
 
 				var canvas = document.getElementById('canvas-5');
@@ -341,6 +368,12 @@
 				}
 
 			}) ();
+
+		</script>
+
+		<h2>Isometric projection</h2>
+		<canvas id="canvas-6"></canvas>
+		<script>
 
 			(function() {
 
@@ -374,5 +407,13 @@
 			}) ();
 
 		</script>
+
+		<h2>Rotation</h2>
+		<p>Using a matrix</p>
+
+		<h2>Perspective</h2>
+		<h2>Z buffer</h2>
+		<h2>Ambient lighting</h2>
+		<h2>Polygon normal lighting</h2>
 	</body>
 </html>

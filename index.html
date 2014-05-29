@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Canvas Graphics</title>
+		<style>
+			body {
+				margin: 3em;
+				background: #EEE;
+				width: 640px;
+				margin: 0 auto;
+				font: 1em / 1.5em Calibri, Arial, Tahoma, Verdana, sans-serif;
+			}
+			h1, h2 {
+				text-align: center;
+			}
+			canvas {
+				background: #000;
+				margin: 1em 0;
+				width: 100%;
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<h2>Basic scaled projection</h2>
+		<p>This projection simply discards the z-axis information and draws the x and y-axis coordinates for each of the model's triangles. The values are scaled from the models normalised values between -1.0 and 1.0 to the desired size in the projection space through multiplication.</p>
+		<canvas id="canvas-1"></canvas>
+		<h2>Rotated orthographic projection</h2>
+		<canvas id="canvas-2"></canvas>
+		<script>
+			function Mat4(elements) {
+
+				if (elements.length !== 16) {
+					throw new Error('Mat4 must have 16 elements');
+				}
+
+				this.element = function(x, y) {
+
+					if (x < 0 || x > 3) {
+						throw new Error('x must be in the range 0 - 3');
+					}
+
+					if (y < 0 || y > 3) {
+						throw new Error('y must be in the range 0 - 3');
+					}
+
+					return elements[y * 4 + x];
+
+				};
+
+				this.multiply = function(other) {
+					// ?
+				};
+
+			}
+
+			Mat4.identity = function() {
+				return new Mat4([
+					1.0, 0.0, 0.0, 0.0,
+					0.0, 1.0, 0.0, 0.0,
+					0.0, 0.0, 1.0, 0.0,
+					0.0, 0.0, 0.0, 1.0
+				]);
+			};
+
+			function Vec3(elements) {
+
+				if (elements.length !== 3) {
+					throw new Error('Vec3 must have 3 elements');
+				}
+
+				this.element = function(i) {
+
+					if (i < 0 || i > 2) {
+						throw new Error('i must be in the range 0 - 2');
+					}
+
+					return elements[i];
+				}
+
+				this.x = function() {
+					return this.element(0);
+				};
+
+				this.y = function() {
+					return this.element(1);
+				};
+
+				this.z = function() {
+					return this.element(2);
+				};
+
+			}
+
+			function Vertex(x, y, z) {
+
+				this.x = function() {
+					return x;
+				};
+
+				this.y = function() {
+					return y;
+				};
+
+				this.z = function() {
+					return z;
+				};
+
+				this.toVec3 = function() {
+					return new Vec3([x, y, z]);
+				};
+
+			}
+
+			function Triangle(a, b, c) {
+
+				this.a = function() {
+					return a;
+				};
+
+				this.b = function() {
+					return b;
+				};
+
+				this.c = function() {
+					return c;
+				};
+
+			}
+
+			var modelVerts = [
+				new Vertex(-1.0, -1.0, -1.0), // 0 FBL
+				new Vertex( 1.0, -1.0, -1.0), // 1 FBR
+
+				new Vertex(-1.0, -1.0,  1.0), // 2 RBL
+				new Vertex( 1.0, -1.0,  1.0), // 3 RBR
+				
+				new Vertex(-1.0,  1.0, -1.0), // 4 FTL
+				new Vertex( 1.0,  1.0, -1.0), // 5 FTR
+
+				new Vertex(-1.0,  1.0,  1.0), // 6 RTL
+				new Vertex( 1.0,  1.0,  1.0)  // 7 RTR
+			];
+
+			var modelTriangles = [
+				new Triangle(modelVerts[0], modelVerts[1], modelVerts[3]),
+				new Triangle(modelVerts[3], modelVerts[2], modelVerts[0]),
+				new Triangle(modelVerts[4], modelVerts[5], modelVerts[7]),
+				new Triangle(modelVerts[7], modelVerts[6], modelVerts[4]),
+				new Triangle(modelVerts[4], modelVerts[0], modelVerts[1]),
+				new Triangle(modelVerts[1], modelVerts[5], modelVerts[4]),
+				new Triangle(modelVerts[7], modelVerts[3], modelVerts[2]),
+				new Triangle(modelVerts[2], modelVerts[6], modelVerts[7]),
+				new Triangle(modelVerts[5], modelVerts[1], modelVerts[3]),
+				new Triangle(modelVerts[3], modelVerts[7], modelVerts[5]),
+				new Triangle(modelVerts[6], modelVerts[2], modelVerts[0]),
+				new Triangle(modelVerts[0], modelVerts[4], modelVerts[6])
+			];
+
+			// Basic scaled projection discarding depth / z value
+			(function() {
+				var canvas = document.getElementById('canvas-1');
+				var context = canvas.getContext('2d');
+
+				canvas.width = "640";
+				canvas.height = "480";
+
+				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
+				context.strokeStyle = '#FFFFFF';
+
+				var modelSize = canvas.width / 2;
+				for (var i = 0; i < modelTriangles.length; ++i) {
+					var triangle = modelTriangles[i];
+
+					context.beginPath();
+					context.moveTo(triangle.a().x() * modelSize / 2, triangle.a().y() * modelSize / 2);
+					context.lineTo(triangle.b().x() * modelSize / 2, triangle.b().y() * modelSize / 2);
+					context.lineTo(triangle.c().x() * modelSize / 2, triangle.c().y() * modelSize / 2);
+					context.closePath();
+					context.stroke();
+				}
+			}) ();
+
+		</script>
+	</body>
+</html>

@@ -35,6 +35,8 @@
 		<canvas id="canvas-4"></canvas>
 		<p>Or z * 2 / 3</p>
 		<canvas id="canvas-5"></canvas>
+		<h3>Isometric projection</h3>
+		<canvas id="canvas-6"></canvas>
 		<script>
 			/*function Mat4(elements) {
 
@@ -136,6 +138,35 @@
 
 			}
 
+			function Polygon(vertices) {
+
+				this.count = function() {
+					return vertices.length;
+				};
+
+				this.vertex = function(i) {
+					if (i < 0) {
+						throw new Error('Vertex index must be a positive integer')
+					}
+					if (i >= vertices.length) {
+						throw new Error('Vertex index out of bounds');
+					}
+
+					return vertices[i];
+				};
+
+			}
+
+			function drawPolygon(context, polygon, fx, fy) {
+				context.beginPath();
+				context.moveTo(fx(polygon.vertex(0)), -1 * fy(polygon.vertex(0)));
+				for (var i = 1; i < polygon.count(); ++i) {
+					context.lineTo(fx(polygon.vertex(i)), -1 * fy(polygon.vertex(i)));
+				}
+				context.closePath();
+				context.stroke();
+			}
+
 			var modelVerts = [
 				new Vertex(-1.0, -1.0, -1.0), // 0 FBL
 				new Vertex( 1.0, -1.0, -1.0), // 1 FBR
@@ -150,23 +181,18 @@
 				new Vertex( 1.0,  1.0,  1.0)  // 7 RTR
 			];
 
-			var modelTriangles = [
-				new Triangle(modelVerts[0], modelVerts[1], modelVerts[3]),
-				new Triangle(modelVerts[3], modelVerts[2], modelVerts[0]),
-				new Triangle(modelVerts[4], modelVerts[5], modelVerts[7]),
-				new Triangle(modelVerts[7], modelVerts[6], modelVerts[4]),
-				new Triangle(modelVerts[4], modelVerts[0], modelVerts[1]),
-				new Triangle(modelVerts[1], modelVerts[5], modelVerts[4]),
-				new Triangle(modelVerts[7], modelVerts[3], modelVerts[2]),
-				new Triangle(modelVerts[2], modelVerts[6], modelVerts[7]),
-				new Triangle(modelVerts[5], modelVerts[1], modelVerts[3]),
-				new Triangle(modelVerts[3], modelVerts[7], modelVerts[5]),
-				new Triangle(modelVerts[6], modelVerts[2], modelVerts[0]),
-				new Triangle(modelVerts[0], modelVerts[4], modelVerts[6])
+			var modelPolygons = [
+				new Polygon([modelVerts[0], modelVerts[1], modelVerts[5], modelVerts[4]]), // FRONT
+				new Polygon([modelVerts[2], modelVerts[3], modelVerts[7], modelVerts[6]]), // REAR
+				new Polygon([modelVerts[0], modelVerts[1], modelVerts[3], modelVerts[2]]), // BOTTOM
+				new Polygon([modelVerts[4], modelVerts[5], modelVerts[7], modelVerts[6]]), // TOP
+				new Polygon([modelVerts[0], modelVerts[2], modelVerts[6], modelVerts[4]]), // LEFT
+				new Polygon([modelVerts[1], modelVerts[3], modelVerts[7], modelVerts[5]])  // RIGHT
 			];
 
 			// Basic scaled projection discarding depth / z value
 			(function() {
+
 				var canvas = document.getElementById('canvas-1');
 				var context = canvas.getContext('2d');
 
@@ -187,19 +213,14 @@
 					return vertex.y() * scale;
 				};
 
-				for (var i = 0; i < modelTriangles.length; ++i) {
-					var triangle = modelTriangles[i];
-
-					context.beginPath();
-					context.moveTo(fx(triangle.a()), -1 * fy(triangle.a()));
-					context.lineTo(fx(triangle.b()), -1 * fy(triangle.b()));
-					context.lineTo(fx(triangle.c()), -1 * fy(triangle.c()));
-					context.closePath();
-					context.stroke();
+				for (var i = 0; i < modelPolygons.length; ++i) {
+					drawPolygon(context, modelPolygons[i], fx, fy);
 				}
+
 			}) ();
 
 			(function() {
+				
 				var canvas = document.getElementById('canvas-2');
 				var context = canvas.getContext('2d');
 
@@ -208,7 +229,7 @@
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#FFFFFF';
-
+				
 				var modelSize = canvas.width / 2;
 				var scale = modelSize / 2;
 				var a = 0.2;
@@ -222,19 +243,14 @@
 					return (vertex.y() + vertex.z() * b) * scale;
 				};
 
-				for (var i = 0; i < modelTriangles.length; ++i) {
-					var triangle = modelTriangles[i];
-
-					context.beginPath();
-					context.moveTo(fx(triangle.a()), -1 * fy(triangle.a()));
-					context.lineTo(fx(triangle.b()), -1 * fy(triangle.b()));
-					context.lineTo(fx(triangle.c()), -1 * fy(triangle.c()));
-					context.closePath();
-					context.stroke();
+				for (var i = 0; i < modelPolygons.length; ++i) {
+					drawPolygon(context, modelPolygons[i], fx, fy);
 				}
+
 			}) ();
 
 			(function() {
+
 				var canvas = document.getElementById('canvas-3');
 				var context = canvas.getContext('2d');
 
@@ -258,19 +274,14 @@
 					return (vertex.y() + vertex.z() * b) * scale;
 				};
 
-				for (var i = 0; i < modelTriangles.length; ++i) {
-					var triangle = modelTriangles[i];
-
-					context.beginPath();
-					context.moveTo(fx(triangle.a()), -1 * fy(triangle.a()));
-					context.lineTo(fx(triangle.b()), -1 * fy(triangle.b()));
-					context.lineTo(fx(triangle.c()), -1 * fy(triangle.c()));
-					context.closePath();
-					context.stroke();
+				for (var i = 0; i < modelPolygons.length; ++i) {
+					drawPolygon(context, modelPolygons[i], fx, fy);
 				}
+
 			}) ();
 
 			(function() {
+
 				var canvas = document.getElementById('canvas-4');
 				var context = canvas.getContext('2d');
 
@@ -294,19 +305,14 @@
 					return (vertex.y() + vertex.z() * b) * scale;
 				};
 
-				for (var i = 0; i < modelTriangles.length; ++i) {
-					var triangle = modelTriangles[i];
-
-					context.beginPath();
-					context.moveTo(fx(triangle.a()), -1 * fy(triangle.a()));
-					context.lineTo(fx(triangle.b()), -1 * fy(triangle.b()));
-					context.lineTo(fx(triangle.c()), -1 * fy(triangle.c()));
-					context.closePath();
-					context.stroke();
+				for (var i = 0; i < modelPolygons.length; ++i) {
+					drawPolygon(context, modelPolygons[i], fx, fy);
 				}
+
 			}) ();
 
 			(function() {
+
 				var canvas = document.getElementById('canvas-5');
 				var context = canvas.getContext('2d');
 
@@ -330,16 +336,41 @@
 					return (vertex.y() + vertex.z() * b) * scale;
 				};
 
-				for (var i = 0; i < modelTriangles.length; ++i) {
-					var triangle = modelTriangles[i];
-
-					context.beginPath();
-					context.moveTo(fx(triangle.a()), -1 * fy(triangle.a()));
-					context.lineTo(fx(triangle.b()), -1 * fy(triangle.b()));
-					context.lineTo(fx(triangle.c()), -1 * fy(triangle.c()));
-					context.closePath();
-					context.stroke();
+				for (var i = 0; i < modelPolygons.length; ++i) {
+					drawPolygon(context, modelPolygons[i], fx, fy);
 				}
+
+			}) ();
+
+			(function() {
+
+				var canvas = document.getElementById('canvas-6');
+				var context = canvas.getContext('2d');
+
+				canvas.width = "640";
+				canvas.height = "480";
+
+				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
+				context.strokeStyle = '#FFFFFF';
+
+				var modelSize = canvas.width / 4;
+				var scale = modelSize / 2;
+				var angle = Math.PI / 6; // 30 degrees
+				var a = Math.cos(angle);
+				var b = Math.sin(angle);
+
+				var fx = function(vertex) {
+					return (vertex.x() * a + vertex.z() * a) * scale;
+				};
+
+				var fy = function(vertex) {
+					return (vertex.y() + vertex.z() * b - vertex.x() * b) * scale;
+				};
+
+				for (var i = 0; i < modelPolygons.length; ++i) {
+					drawPolygon(context, modelPolygons[i], fx, fy);
+				}
+
 			}) ();
 
 		</script>

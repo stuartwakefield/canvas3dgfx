@@ -26,6 +26,169 @@
 		</style>
 		<script>
 
+			function Vertex(x, y, z) {
+
+				this.x = function() {
+					return x;
+				};
+
+				this.y = function() {
+					return y;
+				};
+
+				this.z = function() {
+					return z;
+				};
+
+			}
+
+			function Polygon(vertices) {
+
+				this.count = function() {
+					return vertices.length;
+				};
+
+				this.vertex = function(i) {
+					if (i < 0) {
+						throw new Error('Vertex index must be a positive integer')
+					}
+					if (i >= vertices.length) {
+						throw new Error('Vertex index out of bounds');
+					}
+
+					return vertices[i];
+				};
+
+			}
+
+			function drawPolygon(context, polygon, fx, fy) {
+				context.beginPath();
+				context.moveTo(fx(polygon.vertex(0)), -1 * fy(polygon.vertex(0)));
+				for (var i = 1; i < polygon.count(); ++i) {
+					context.lineTo(fx(polygon.vertex(i)), -1 * fy(polygon.vertex(i)));
+				}
+				context.closePath();
+				context.stroke();
+			}
+
+			function Vec3(elements) {
+
+				if (elements.length !== 3) {
+					throw new Error('Vec3 must have 3 elements');
+				}
+
+				this.element = function(i) {
+
+					if (i < 0 || i > 2) {
+						throw new Error('i must be in the range 0 - 2');
+					}
+
+					return elements[i];
+
+				};
+
+				this.multiply = function(matrix) {
+
+					if (!(matrix instanceof Mat3)) {
+						throw new Error('matrix must be a Mat3');
+					}
+
+					return matrix.multiply(this);
+
+				}
+
+			}
+
+			Vertex.toVec3 = function(vertex) {
+				return new Vec3([vertex.x(), vertex.y(), vertex.z()]);
+			};
+
+			Vertex.fromVec3 = function(vector) {
+				return new Vertex(vector.element(0), vector.element(1), vector.element(2));
+			};
+
+			function Mat3(elements) {
+
+				if (elements.length !== 9) {
+					throw new Error('Mat3 must have 9 elements');
+				}
+
+				this.element = function(x, y) {
+
+					if (x < 0 || x > 2) {
+						throw new Error('x must be in the range 0 -2');
+					}
+
+					if (y < 0 || y > 2) {
+						throw new Error('y must be in the range 0 - 2');
+					}
+
+					return elements[y * 3 + x];
+
+				};
+
+				this.multiply = function(other) {
+
+					if (!(other instanceof Vec3)
+							&& !(other instanceof Mat3)) {
+						throw new Error('vector must be either a Vec3 or Mat3');
+					}
+
+					var elements = [];
+					for (var y = 0; y < 3; ++y) {
+						var sum = 0;
+						for (var x = 0; x < 3; ++x) {
+							sum += other.element(x) * this.element(x, y);
+						}
+						elements.push(sum);
+					}
+
+					return new Vec3(elements);
+
+				};
+
+			}
+
+			Mat3.identity = function() {
+				return new Mat3([
+					1.0, 0.0, 0.0,
+					0.0, 1.0, 0.0,
+					0.0, 0.0, 1.0
+				]);
+			}
+
+			Mat3.rotationX = function(angle) {
+				var a = Math.cos(angle);
+				var b = Math.sin(angle);
+				return new Mat3([
+					1.0, 0.0, 0.0,
+					0.0,   a,  -b,
+					0.0,   b,   a,
+				]);
+			};
+
+			Mat3.rotationY = function(angle) {
+				var a = Math.cos(angle);
+				var b = Math.sin(angle);
+				return new Mat3([
+					  a, 0.0,   b,
+					0.0, 1.0, 0.0,
+					 -b, 0.0,   a,
+				]);
+			};
+
+
+			Mat3.rotationZ = function(angle) {
+				var a = Math.cos(angle);
+				var b = Math.sin(angle);
+				return new Mat3([
+					  a,  -b, 0.0,
+					  b,   a, 0.0,
+					0.0, 0.0, 1.0,
+				]);
+			};
+
+
 			/*function Mat4(elements) {
 
 				if (elements.length !== 16) {
@@ -59,101 +222,7 @@
 					0.0, 0.0, 1.0, 0.0,
 					0.0, 0.0, 0.0, 1.0
 				]);
-			};
-
-			function Vec3(elements) {
-
-				if (elements.length !== 3) {
-					throw new Error('Vec3 must have 3 elements');
-				}
-
-				this.element = function(i) {
-
-					if (i < 0 || i > 2) {
-						throw new Error('i must be in the range 0 - 2');
-					}
-
-					return elements[i];
-				}
-
-				this.x = function() {
-					return this.element(0);
-				};
-
-				this.y = function() {
-					return this.element(1);
-				};
-
-				this.z = function() {
-					return this.element(2);
-				};
-
-			}*/
-
-			function Vertex(x, y, z) {
-
-				this.x = function() {
-					return x;
-				};
-
-				this.y = function() {
-					return y;
-				};
-
-				this.z = function() {
-					return z;
-				};
-
-				/*this.toVec3 = function() {
-					return new Vec3([x, y, z]);
-				};*/
-
-			}
-
-			function Triangle(a, b, c) {
-
-				this.a = function() {
-					return a;
-				};
-
-				this.b = function() {
-					return b;
-				};
-
-				this.c = function() {
-					return c;
-				};
-
-			}
-
-			function Polygon(vertices) {
-
-				this.count = function() {
-					return vertices.length;
-				};
-
-				this.vertex = function(i) {
-					if (i < 0) {
-						throw new Error('Vertex index must be a positive integer')
-					}
-					if (i >= vertices.length) {
-						throw new Error('Vertex index out of bounds');
-					}
-
-					return vertices[i];
-				};
-
-			}
-
-			function drawPolygon(context, polygon, fx, fy) {
-				context.beginPath();
-				context.moveTo(fx(polygon.vertex(0)), -1 * fy(polygon.vertex(0)));
-				for (var i = 1; i < polygon.count(); ++i) {
-					context.lineTo(fx(polygon.vertex(i)), -1 * fy(polygon.vertex(i)));
-				}
-				context.closePath();
-				context.stroke();
-			}
+			};*/
 
 		</script>
 	</head>
@@ -371,6 +440,7 @@
 
 		</script>
 
+		<h2>Axonometric projection</h2>
 		<h2>Isometric projection</h2>
 		<canvas id="canvas-6"></canvas>
 		<script>
@@ -410,6 +480,41 @@
 
 		<h2>Rotation</h2>
 		<p>Using a matrix</p>
+		<canvas id="canvas-7"></canvas>
+		<script>
+
+			(function() {
+
+				var canvas = document.getElementById('canvas-7');
+				var context = canvas.getContext('2d');
+
+				canvas.width = "640";
+				canvas.height = "480";
+
+				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
+				context.strokeStyle = '#FFFFFF';
+
+				var modelSize = canvas.width / 4;
+				var scale = modelSize / 2;
+				var transform = Mat3.identity()
+					.multiply(Mat3.rotationX(Math.PI / 4))  // 45 degrees
+					.multiply(Mat3.rotationY(Math.PI / 6)); // 30 degrees
+
+				var fx = function(vertex) {
+					return vertex.x() * scale;
+				};
+
+				var fy = function(vertex) {
+					return vertex.y() * scale;
+				};
+
+				for (var i = 0; i < modelPolygons.length; ++i) {
+					drawPolygon(context, modelPolygons[i], fx, fy);
+				}
+
+			}) ();
+
+		</script>
 
 		<h2>Perspective</h2>
 		<h2>Z buffer</h2>

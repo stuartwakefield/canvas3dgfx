@@ -274,7 +274,17 @@
 			};
 
 			function drawAxisIndicator(context, matrix) {
+
+				context.save();
+
+				context.textBaseline = 'middle';
+				context.textAlign = 'center';
+
 				context.strokeStyle = '#F06';
+				context.fillStyle = '#F06';
+
+				var x = new Vec3([30.0, 0.0, 0.0]).multiply(matrix);
+				context.fillText('X', x.element(0), -1 * x.element(1));
 				drawLineFromVectors(
 					context,
 					new Vec3([0.0, 0.0, 0.0]).multiply(matrix),
@@ -282,6 +292,10 @@
 				);
 
 				context.strokeStyle = '#F90';
+				context.fillStyle = '#F90';
+
+				var y = new Vec3([0.0, 30.0, 0.0]).multiply(matrix);
+				context.fillText('Y', y.element(0), -1 * y.element(1));
 				drawLineFromVectors(
 					context,
 					new Vec3([0.0, 0.0, 0.0]).multiply(matrix),
@@ -289,11 +303,18 @@
 				);
 
 				context.strokeStyle = '#09C';
+				context.fillStyle = '#09C';
+
+				var z = new Vec3([0.0, 0.0, 30.0]).multiply(matrix);
+				context.fillText('Z', z.element(0), -1 * z.element(1));
 				drawLineFromVectors(
 					context,
 					new Vec3([0.0, 0.0, 0.0]).multiply(matrix),
 					new Vec3([0.0, 0.0, 20.0]).multiply(matrix)
 				);
+
+				context.restore();
+
 			};
 
 			function drawLineFromVectors(context, a, b) {
@@ -302,6 +323,18 @@
 				context.lineTo(b.element(0), -1 * b.element(1));
 				context.stroke();
 			};
+
+			var loop = {
+				fns: [],
+				start: function() {
+					var fns = this.fns;
+					setInterval(function() {
+						for (var i = 0; i < fns.length; ++i) {
+							fns[i]();
+						}
+					}, 25);
+				}
+			}
 
 		</script>
 	</head>
@@ -539,27 +572,114 @@
 
 				var modelSize = canvas.width / 4;
 				var scale = modelSize / 2;
-				var transform = Mat3.identity()
-					.multiply(Mat3.rotationY(Math.PI / 4))
-					.multiply(Mat3.rotationX(Math.PI / 6)); // 45 degrees
+				var step = 0;
 
-				var fx = function(vertex) {
-					return vertex.x() * scale;
-				};
+				loop.fns.push(function() {
+					context.clearRect(- canvas.width / 2, - canvas.height / 2, canvas.width, canvas.height);
+					var transform = Mat3.identity()
+						.multiply(Mat3.rotationX(Math.PI * step++ / 128));
 
-				var fy = function(vertex) {
-					return vertex.y() * scale;
-				};
+					var fx = function(vertex) {
+						return vertex.x() * scale;
+					};
 
-				for (var i = 0; i < modelPolygons.length; ++i) {
-					drawPolygon2(context, modelPolygons[i], transform, fx, fy);
-				}
+					var fy = function(vertex) {
+						return vertex.y() * scale;
+					};
 
-				drawAxisIndicator(context, transform);
+					drawAxisIndicator(context, transform);
+
+					for (var i = 0; i < modelPolygons.length; ++i) {
+						drawPolygon2(context, modelPolygons[i], transform, fx, fy);
+					}
+				});
 
 			}) ();
 
 		</script>
+		<canvas id="canvas-8"></canvas>
+		<script>
+
+			(function() {
+
+				var canvas = document.getElementById('canvas-8');
+				var context = canvas.getContext('2d');
+
+				canvas.width = "640";
+				canvas.height = "480";
+
+				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
+				context.strokeStyle = '#FFFFFF';
+
+				var modelSize = canvas.width / 4;
+				var scale = modelSize / 2;
+				var step = 0;
+
+				loop.fns.push(function() {
+					context.clearRect(- canvas.width / 2, - canvas.height / 2, canvas.width, canvas.height);
+					var transform = Mat3.identity()
+						.multiply(Mat3.rotationY(Math.PI * step++ / 128));
+
+					var fx = function(vertex) {
+						return vertex.x() * scale;
+					};
+
+					var fy = function(vertex) {
+						return vertex.y() * scale;
+					};
+
+					drawAxisIndicator(context, transform);
+
+					for (var i = 0; i < modelPolygons.length; ++i) {
+						drawPolygon2(context, modelPolygons[i], transform, fx, fy);
+					}
+				});
+
+			}) ();
+
+		</script>
+		<canvas id="canvas-9"></canvas>
+		<script>
+
+			(function() {
+
+				var canvas = document.getElementById('canvas-9');
+				var context = canvas.getContext('2d');
+
+				canvas.width = "640";
+				canvas.height = "480";
+
+				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
+				context.strokeStyle = '#FFFFFF';
+
+				var modelSize = canvas.width / 4;
+				var scale = modelSize / 2;
+				var step = 0;
+
+				loop.fns.push(function() {
+					context.clearRect(- canvas.width / 2, - canvas.height / 2, canvas.width, canvas.height);
+					var transform = Mat3.identity()
+						.multiply(Mat3.rotationZ(Math.PI * step++ / 128));
+
+					var fx = function(vertex) {
+						return vertex.x() * scale;
+					};
+
+					var fy = function(vertex) {
+						return vertex.y() * scale;
+					};
+
+					drawAxisIndicator(context, transform);
+
+					for (var i = 0; i < modelPolygons.length; ++i) {
+						drawPolygon2(context, modelPolygons[i], transform, fx, fy);
+					}
+				});
+
+			}) ();
+
+		</script>
+		<script>loop.start();</script>
 
 		<h2>Perspective</h2>
 		<h2>Z buffer</h2>

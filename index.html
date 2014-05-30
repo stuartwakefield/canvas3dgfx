@@ -71,6 +71,74 @@
 				context.stroke();
 			}
 
+			var basic = {
+
+				gx: function(scale) {
+					return function(vertex) {
+						return vertex.x() * scale;
+					};
+				},
+
+				gy: function(scale) {
+					return function(vertex) {
+						return vertex.y() * scale;
+					};
+				}
+
+			};
+
+			var orthographic = {
+
+				gx: function(scale, zc) {
+					return function(vertex) {
+						return (vertex.x() + vertex.z() * zc) * scale;
+					};
+				},
+
+				gy: function(scale, zc) {
+					return function(vertex) {
+						return (vertex.y() + vertex.z() * zc) * scale;
+					};
+				}
+
+			};
+
+			var isometric = {
+
+				gx: function(scale, c) {
+					return function(vertex) {
+						return (vertex.x() * c + vertex.z() * c) * scale;
+					};
+				},
+
+				gy: function(scale, c) {
+					return function(vertex) {
+						return (vertex.y() + vertex.z() * c - vertex.x() * c) * scale;
+					};
+				}
+
+			}
+
+			function drawPolygon2(context, polygon, matrix, fx, fy) {
+				context.beginPath();
+				var vertex = Vertex.transform(polygon.vertex(0), matrix);
+				context.moveTo(fx(vertex), -1 * fy(vertex));
+				for (var i = 1; i < polygon.count(); ++i) {
+					vertex = Vertex.transform(polygon.vertex(i), matrix);
+					context.lineTo(fx(vertex), -1 * fy(vertex));
+				}
+				context.closePath();
+				context.stroke();
+			}
+
+			Vertex.transform = function(vertex, matrix) {
+				return Vertex.fromVec3(
+					matrix.multiply(
+						Vertex.toVec3(vertex)
+					)
+				);
+			};
+
 			function Vec3(elements) {
 
 				if (elements.length !== 3) {
@@ -134,16 +202,33 @@
 						throw new Error('vector must be either a Vec3 or Mat3');
 					}
 
-					var elements = [];
-					for (var y = 0; y < 3; ++y) {
-						var sum = 0;
-						for (var x = 0; x < 3; ++x) {
-							sum += other.element(x) * this.element(x, y);
-						}
-						elements.push(sum);
-					}
+					if (other instanceof Vec3) {
 
-					return new Vec3(elements);
+						var elements = [];
+						for (var y = 0; y < 3; ++y) {
+							var sum = 0;
+							for (var x = 0; x < 3; ++x) {
+								sum += other.element(x) * this.element(x, y);
+							}
+							elements.push(sum);
+						}
+
+						return new Vec3(elements);
+					} else {
+
+						var elements = [];
+						for (var z = 0; z < 3; ++z) {
+							for (var y = 0; y < 3; ++y) {
+								var sum = 0;
+								for (var x = 0; x < 3; ++x) {
+									sum += other.element(y, x) * this.element(x, z);
+								}
+								elements.push(sum);
+							}
+						}
+
+						return new Mat3(elements);
+					}
 
 				};
 
@@ -188,41 +273,35 @@
 				]);
 			};
 
+			function drawAxisIndicator(context, matrix) {
+				context.strokeStyle = '#F06';
+				drawLineFromVectors(
+					context,
+					new Vec3([0.0, 0.0, 0.0]).multiply(matrix),
+					new Vec3([20.0, 0.0, 0.0]).multiply(matrix)
+				);
 
-			/*function Mat4(elements) {
+				context.strokeStyle = '#F90';
+				drawLineFromVectors(
+					context,
+					new Vec3([0.0, 0.0, 0.0]).multiply(matrix),
+					new Vec3([0.0, 20.0, 0.0]).multiply(matrix)
+				);
 
-				if (elements.length !== 16) {
-					throw new Error('Mat4 must have 16 elements');
-				}
+				context.strokeStyle = '#09C';
+				drawLineFromVectors(
+					context,
+					new Vec3([0.0, 0.0, 0.0]).multiply(matrix),
+					new Vec3([0.0, 0.0, 20.0]).multiply(matrix)
+				);
+			};
 
-				this.element = function(x, y) {
-
-					if (x < 0 || x > 3) {
-						throw new Error('x must be in the range 0 - 3');
-					}
-
-					if (y < 0 || y > 3) {
-						throw new Error('y must be in the range 0 - 3');
-					}
-
-					return elements[y * 4 + x];
-
-				};
-
-				this.multiply = function(other) {
-					// ?
-				};
-
-			}
-
-			Mat4.identity = function() {
-				return new Mat4([
-					1.0, 0.0, 0.0, 0.0,
-					0.0, 1.0, 0.0, 0.0,
-					0.0, 0.0, 1.0, 0.0,
-					0.0, 0.0, 0.0, 1.0
-				]);
-			};*/
+			function drawLineFromVectors(context, a, b) {
+				context.beginPath();
+				context.moveTo(a.element(0), -1 * a.element(1));
+				context.lineTo(b.element(0), -1 * b.element(1));
+				context.stroke();
+			};
 
 		</script>
 	</head>
@@ -274,14 +353,8 @@
 
 				var modelSize = canvas.width / 2;
 				var scale = modelSize / 2;
-
-				var fx = function(vertex) {
-					return vertex.x() * scale;
-				};
-
-				var fy = function(vertex) {
-					return vertex.y() * scale;
-				};
+				var fx = basic.gx(scale);
+				var fy = basic.gy(scale);
 
 				for (var i = 0; i < modelPolygons.length; ++i) {
 					drawPolygon(context, modelPolygons[i], fx, fy);
@@ -308,16 +381,9 @@
 
 				var modelSize = canvas.width / 2;
 				var scale = modelSize / 2;
-				var a = 0.2;
-				var b = 0.2;
-
-				var fx = function(vertex) {
-					return (vertex.x() + vertex.z() * a) * scale;
-				};
-
-				var fy = function(vertex) {
-					return (vertex.y() + vertex.z() * b) * scale;
-				};
+				var c = 0.2;
+				var fx = orthographic.gx(scale, c);
+				var fy = orthographic.gy(scale, c);
 
 				for (var i = 0; i < modelPolygons.length; ++i) {
 					drawPolygon(context, modelPolygons[i], fx, fy);
@@ -348,14 +414,8 @@
 				var angle = Math.PI / 6; // 30 degrees
 				var a = Math.cos(angle);
 				var b = Math.sin(angle);
-
-				var fx = function(vertex) {
-					return (vertex.x() + vertex.z() * a) * scale;
-				};
-
-				var fy = function(vertex) {
-					return (vertex.y() + vertex.z() * b) * scale;
-				};
+				var fx = orthographic.gx(scale, a);
+				var fy = orthographic.gy(scale, b);
 
 				for (var i = 0; i < modelPolygons.length; ++i) {
 					drawPolygon(context, modelPolygons[i], fx, fy);
@@ -386,14 +446,8 @@
 				var angle = Math.PI / 6; // 30 degrees
 				var a = Math.cos(angle) / 2;
 				var b = Math.sin(angle) / 2;
-
-				var fx = function(vertex) {
-					return (vertex.x() + vertex.z() * a) * scale;
-				};
-
-				var fy = function(vertex) {
-					return (vertex.y() + vertex.z() * b) * scale;
-				};
+				var fx = orthographic.gx(scale, a);
+				var fy = orthographic.gy(scale, b);
 
 				for (var i = 0; i < modelPolygons.length; ++i) {
 					drawPolygon(context, modelPolygons[i], fx, fy);
@@ -423,14 +477,8 @@
 				var angle = Math.PI / 6; // 30 degrees
 				var a = Math.cos(angle) * 2 / 3;
 				var b = Math.sin(angle) * 2 / 3;
-
-				var fx = function(vertex) {
-					return (vertex.x() + vertex.z() * a) * scale;
-				};
-
-				var fy = function(vertex) {
-					return (vertex.y() + vertex.z() * b) * scale;
-				};
+				var fx = orthographic.gx(scale, a);
+				var fy = orthographic.gy(scale, b);
 
 				for (var i = 0; i < modelPolygons.length; ++i) {
 					drawPolygon(context, modelPolygons[i], fx, fy);
@@ -462,13 +510,8 @@
 				var a = Math.cos(angle);
 				var b = Math.sin(angle);
 
-				var fx = function(vertex) {
-					return (vertex.x() * a + vertex.z() * a) * scale;
-				};
-
-				var fy = function(vertex) {
-					return (vertex.y() + vertex.z() * b - vertex.x() * b) * scale;
-				};
+				var fx = isometric.gx(scale, a);
+				var fy = isometric.gy(scale, b);
 
 				for (var i = 0; i < modelPolygons.length; ++i) {
 					drawPolygon(context, modelPolygons[i], fx, fy);
@@ -497,8 +540,8 @@
 				var modelSize = canvas.width / 4;
 				var scale = modelSize / 2;
 				var transform = Mat3.identity()
-					.multiply(Mat3.rotationX(Math.PI / 4))  // 45 degrees
-					.multiply(Mat3.rotationY(Math.PI / 6)); // 30 degrees
+					.multiply(Mat3.rotationY(Math.PI / 4))
+					.multiply(Mat3.rotationX(Math.PI / 6)); // 45 degrees
 
 				var fx = function(vertex) {
 					return vertex.x() * scale;
@@ -509,8 +552,10 @@
 				};
 
 				for (var i = 0; i < modelPolygons.length; ++i) {
-					drawPolygon(context, modelPolygons[i], fx, fy);
+					drawPolygon2(context, modelPolygons[i], transform, fx, fy);
 				}
+
+				drawAxisIndicator(context, transform);
 
 			}) ();
 

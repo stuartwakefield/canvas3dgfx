@@ -498,8 +498,11 @@
 
 		<p class="note">This article makes use of SVG images and the HTML canvas element, some older browsers are unable to support these features. Check your browser at <a href="http://html5test.com/">html5test.com</a></p>
 
+		<p>Imagine you are in a situation where you have a <abbr title="three-dimensional">3D</abbr> object you want to display. There are a number of ways this object can be displayed, I'm going to run you through the <abbr title="mathematics">maths</abbr> and code to do so.</p>
+
 		<h2>Orthogonal projection</h2>
-		<p>This projection discards one of the axis information to create a two-dimensional representation.</p>
+		<p>This is one of the most basic projection techniques, it simply discards one of the axis information to create a two-dimensional representation of one of the faces, a fancy way of saying sides, of the object.</p>
+		<p>In the following, very interesting, example of a cube, the z-axis information is discarded to show the front face of the object.</p>
 		<canvas id="canvas-1"></canvas>
 		<script>
 
@@ -527,9 +530,12 @@
 			}) ();
 
 		</script>
+		<p>I won't show the projections for the other faces, you'll just have to imagine what they would look like.</p>
 
 		<h2>Oblique projection</h2>
+		<p>This projection technique is a bit more complicated than the last example, but not by much. The z-axis is represented, to give a feel for the three-dimensional shape. Oblique projection is one form of parallel projection and mathematically can be described as:</p>
 		<img src="oblique-projection.svg" alt="(x,y)=(x+az,y+bz)" class="svg"/>
+		<p>The <strong>a</strong> and <strong>b</strong> terms specify the ratio to apply to <strong>z</strong>, different oblique projections use different ratios.</p>
 		<canvas id="canvas-2"></canvas>
 		<script>
 

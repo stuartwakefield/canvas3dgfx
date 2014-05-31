@@ -57,7 +57,7 @@ a:focus {
 }
 
 .code {
-	font: 0.75em / 1.5 "Courier New", courier, monospace;
+	font: 1.25em / 1.5 "Courier New", courier, monospace;
 	overflow-x: auto;
 	padding: 1em 0;
 }
@@ -68,4 +68,22 @@ a:focus {
 	padding: 1em;
 	text-align: center;
 	color: #652;
+}
+.code {
+	padding: 1em;
+	background: #f8f8f8;
+	border-top: 1px solid #dddddd;
+	border-bottom: 1px solid #dddddd;
+}
+code > .keyword,
+code > .storage {
+	color: #F06;
+	font-weight: bold;
+}
+code > .operator {
+	color: inherit;
+	font-weight: inherit;
+}
+code > .call {
+	color: #09C;
 }

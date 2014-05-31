@@ -658,14 +658,16 @@
 		<h2>Axonometric projection</h2>
 		<h3>Isometric projection</h3>
 		<img src="isometric-projection.svg" class="svg"/>
-		<pre class="code">var a = Math.cos(angle);
-<!--		-->var b = Math.sin(angle);
-<!--		-->var fx = function(vertex) {
-<!--		-->  return vertex.x() * a + vertex.z() * a;
-<!--		-->};
-<!--		-->var fy = function(vertex) {
-<!--		-->  return vertex.y() + vertex.z() * b - vertex.x() * b;
-<!--		-->};</pre>
+		<p>The math expression above expressed in JavaScript:</p>
+		<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
+var b = Math.sin(angle);
+var fx = function(vertex) {
+  return vertex.x() * a + vertex.z() * a;
+};
+var fy = function(vertex) {
+  return vertex.y() + vertex.z() * b - vertex.x() * b;
+};</code></pre>
+		<p>The resulting projection:</p>
 		<canvas id="canvas-6"></canvas>
 		<script>
 
@@ -698,13 +700,15 @@
 		</script>
 		<p>Projection can also be expressed more elegantly using a transformation matrix.</p>
 		<img src="isometric-projection-matrix.svg" class="svg"/>
-		<pre class="code">var a = Math.cos(angle);
-<!--		-->var b = Math.sin(angle);
-<!--		-->return new Mat3([
-<!--		-->   a, 0, a,
-<!--		-->  -b, 1, b,
-<!--		-->   0, 0, 0
-<!--		-->]);</pre>
+		<p>The matrix is created using a simple Matrix class that supports 3 &times; 3 matrices:</p>
+		<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
+var b = Math.sin(angle);
+return new Mat3([
+   a, 0, a,
+  -b, 1, b,
+   0, 0, 0
+]);</code></pre>
+		<p>The resulting projection:</p>
 		<canvas id="canvas-6a"></canvas>
 		<script>
 
@@ -928,5 +932,7 @@
 			<li>Improved Specular Highlights with Adaptive Shading - Youngkwan Cho, Ulrich Neumann and Jongwook Woo</li>
 			<li>Relief Texture Mapping - Manuel M Oliveira, Gary Bishop and David McAllister</li>-->
 		</ul>
+		<script src="rainbow-javascript.min.js"></script>
+		<script>Rainbow.color();</script>
 	</body>
 </html>

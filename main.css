@@ -84,6 +84,13 @@ code > .operator {
 	color: inherit;
 	font-weight: inherit;
 }
-code > .call {
+code > .call,
+code > .method {
 	color: #09C;
+}
+code > .comment {
+	color: #999;
+}
+code > .string {
+	color: #F90;
 }

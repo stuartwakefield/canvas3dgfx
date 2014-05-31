@@ -1,0 +1,71 @@
+body {
+	margin: 0 auto;
+	padding: 40% 2em 2em;
+	background: #eeeeee;
+	max-width: 640px;
+	font: 1em / 1.5em Calibri, Arial, Tahoma, Verdana, sans-serif;
+	color: #222222;
+	background: url('bg.jpg') top center no-repeat;
+	background-size: contain;
+}
+
+h1, h2 {
+	text-align: center;
+}
+
+h1 {
+	font-size: 2em;
+	line-height: 1.5em;
+	margin: 1em 0;
+}
+
+h2 {
+	padding-top: 2em;
+	margin: 2em 0;
+	border-top: 1px solid #dddddd;
+}
+
+canvas {
+	margin: 1em 0;
+	width: 100%;
+	display: block;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:focus,
+a:active {
+	color: #09c;
+	text-decoration: none;
+	border-bottom: 1px solid rgba(0, 153, 204, 0);
+	transition: border 0.25s ease-in-out;
+}
+
+a:hover,
+a:focus {
+	border-bottom-color: rgba(0, 153, 204, 1);
+}
+
+.header {
+	margin: 5em 0;
+	text-align: center;
+}
+
+.svg {
+	width: 100%;
+}
+
+.code {
+	font: 0.75em / 1.5 "Courier New", courier, monospace;
+	overflow-x: auto;
+	padding: 1em 0;
+}
+
+.note {
+	background: #FFC;
+	border: 1px solid #ED9;
+	padding: 1em;
+	text-align: center;
+	color: #652;
+}

@@ -1,26 +1,61 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Canvas Graphics</title>
+		<title>Projection of Three-Dimensional Models in JavaScript and HTML5 Canvas</title>
 		<style>
 
 			body {
 				margin: auto;
-				padding: 2em;
+				padding: 50% 2em 2em;
 				background: #eeeeee;
 				max-width: 640px;
 				font: 1em / 1.5em Calibri, Arial, Tahoma, Verdana, sans-serif;
 				color: #222222;
+				background: url('bg.jpg') top center no-repeat;
+				background-size: contain;
 			}
 
 			h1, h2 {
 				text-align: center;
 			}
 
+			h1 {
+				font-size: 2em;
+				line-height: 1.5em;
+				margin: 1em 0;
+			}
+
+			h2 {
+				padding-top: 2em;
+				margin: 2em 0;
+				border-top: 1px solid #dddddd;
+			}
+
 			canvas {
 				margin: 1em 0;
 				width: 100%;
 				display: block;
+			}
+
+			a:link,
+			a:visited,
+			a:hover,
+			a:focus,
+			a:active {
+				color: #09c;
+				text-decoration: none;
+				border-bottom: 1px solid rgba(0, 153, 204, 0);
+				transition: border 0.25s ease-in-out;
+			}
+
+			a:hover,
+			a:focus {
+				border-bottom-color: rgba(0, 153, 204, 1);
+			}
+
+			.header {
+				margin: 5em 0;
+				text-align: center;
 			}
 
 			.svg {
@@ -31,6 +66,14 @@
 				font: 0.75em / 1.5 "Courier New", courier, monospace;
 				overflow-x: auto;
 				padding: 1em 0;
+			}
+
+			.note {
+				background: #FFC;
+				border: 1px solid #ED9;
+				padding: 1em;
+				text-align: center;
+				color: #652;
 			}
 
 		</style>
@@ -517,7 +560,12 @@
 
 		</script>
 
-		<p>This article makes use of SVG and HTML canvas.</p>
+		<div class="header">
+			<h1>Projection of Three-Dimensional Models in JavaScript and HTML5 Canvas</h2>
+			<p class="author">Stuart Wakefield</p>
+		</div>
+
+		<p class="note">This article makes use of SVG images and the HTML canvas element, some older browsers are unable to support these features. Check your browser at <a href="http://html5test.com/">html5test.com</a></p>
 
 		<h2>Orthogonal projection</h2>
 		<p>This projection discards one of the axis information to create a two-dimensional representation.</p>
@@ -531,7 +579,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";
-				canvas.height = "480";
+				canvas.height = "240";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -560,7 +608,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.height = "240";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -592,7 +640,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.height = "320";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -625,7 +673,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.height = "320";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -655,7 +703,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.height = "320";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -677,7 +725,7 @@
 		</script>
 
 		<h2>Axonometric projection</h2>
-		<h2>Isometric projection</h2>
+		<h3>Isometric projection</h3>
 		<img src="isometric-projection.svg" class="svg"/>
 		<pre class="code">var a = Math.cos(angle);
 <!--		-->var b = Math.sin(angle);
@@ -696,7 +744,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.height = "320";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -735,7 +783,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.height = "320";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -756,7 +804,7 @@
 
 		</script>
 
-		<h2>Rotation</h2>
+		<h2>Rotation transformations</h2>
 		<p>Using a matrix</p>
 		<img src="rotation-transform-matrices.svg" class="svg"/>
 		<canvas id="canvas-7"></canvas>
@@ -768,7 +816,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.height = "240";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -808,7 +856,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.height = "240";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -847,8 +895,8 @@
 				var canvas = document.getElementById('canvas-9');
 				var context = canvas.getContext('2d');
 
-				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.width = "640";
+				canvas.height = "240";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -890,7 +938,7 @@
 				var context = canvas.getContext('2d');
 
 				canvas.width = "640";;
-				canvas.height = "480";
+				canvas.height = "320";
 
 				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
 				context.strokeStyle = '#222222';
@@ -925,7 +973,7 @@
 		</script>
 		<script>loop.start();</script>
 
-		<p>Next:</p>
+		<!--<p>Next:</p>
 		<ul>
 			<li>Perspective</li>
 			<li>Z buffer</li>
@@ -936,18 +984,18 @@
 			<li>Representing curves</li>
 			<li>Phong lighting</li>
 			<li>Bump mapping</li>
-		</ul>
+		</ul>-->
 
-		<p>Bibliography:</p>
+		<h2>Bibliography</h2>
 		<ul>
-			<li>Planar Geometric Projections and Viewing Transformations - Ingrid Carlbom and Joseph Paciorek</li>
-			<li>3D projection - Wikipedia</li>
-			<li>Rotation matrix - Wikipedia</li>
-			<li>Continuous Shading of Curved Surfaces - Henri Gouraud</li>
+			<li>Carlbrom, I., &amp; Paciorek, J. <em><a href="http://www.cs.uns.edu.ar/cg/clasespdf/p465carlbom.pdf">Planar Geometric Projections and Viewing Transformations</a></em>. ACM Computing Surveys, Vol. 10, No. 4. 1978.</li>
+			<li><em>Multiple authors</em>. <em><a href="http://en.wikipedia.org/w/index.php?title=3D_projection&amp;oldid=608680154">3D projection</a></em>. Wikipedia. 2014.</li>
+			<li><em>Multiple authors</em>. <em><a href="http://en.wikipedia.org/w/index.php?title=Rotation_matrix&amp;oldid=610870750">Rotation matrix</a></em>. Wikipedia. 2014.</li>
+			<!--<li>Continuous Shading of Curved Surfaces - Henri Gouraud</li>
 			<li>Illumination for Computer Generated Pictures - Bui Tuong Phong</li>
 			<li>Fast Phong Shading - Gary Bishop and David M Weimer</li>
 			<li>Improved Specular Highlights with Adaptive Shading - Youngkwan Cho, Ulrich Neumann and Jongwook Woo</li>
-			<li>Relief Texture Mapping - Manuel M Oliveira, Gary Bishop and David McAllister</li>
+			<li>Relief Texture Mapping - Manuel M Oliveira, Gary Bishop and David McAllister</li>-->
 		</ul>
 	</body>
 </html>

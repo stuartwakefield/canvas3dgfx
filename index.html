@@ -2,499 +2,32 @@
 <html>
 	<head>
 		<meta charset="UTF-8"/>
-		<title>Projection of Three-Dimensional Models in JavaScript and HTML5 Canvas</title>
+		<title>Projection of 3D Models in JavaScript and HTML5 Canvas</title>
 		<meta name="description" content="A walkthrough of the maths and code required to construct three-dimensional graphics in JavaScript and using the HTML5 canvas element."/>
 		<meta name="keywords" content="Mathematics, Maths, JavaScript, JS, HTML5 Canvas Element, Canvas Context 2d, Three-dimensional graphics, 3D graphics, Vector, Vertex, Matrix, Rotation, Transform, Isometric, Orthographic, Orthogonal, Oblique, Projection"/>
 		<meta name="viewport" content="width=device-width,initial-scale=0.5,maximum-scale=1.0"/>
-		<link rel="stylesheet" media="screen" href="main.css"/>
-		<script src="ga.js" async></script>
-		<script>
-
-			function Vertex(x, y, z) {
-
-				this.x = function() {
-					return x;
-				};
-
-				this.y = function() {
-					return y;
-				};
-
-				this.z = function() {
-					return z;
-				};
-
-			}
-
-			function Polygon(vertices) {
-
-				this.count = function() {
-					return vertices.length;
-				};
-
-				this.vertex = function(i) {
-					if (i < 0) {
-						throw new Error('Vertex index must be a positive integer')
-					}
-					if (i >= vertices.length) {
-						throw new Error('Vertex index out of bounds');
-					}
-
-					return vertices[i];
-				};
-
-			}
-
-			function drawPolygon(context, polygon, fx, fy) {
-				context.beginPath();
-				context.moveTo(fx(polygon.vertex(0)), -1 * fy(polygon.vertex(0)));
-				for (var i = 1; i < polygon.count(); ++i) {
-					context.lineTo(fx(polygon.vertex(i)), -1 * fy(polygon.vertex(i)));
-				}
-				context.closePath();
-				context.stroke();
-			}
-
-			var orthogonal = {
-
-				gx: function(scale) {
-					return function(vertex) {
-						return vertex.x() * scale;
-					};
-				},
-
-				gy: function(scale) {
-					return function(vertex) {
-						return vertex.y() * scale;
-					};
-				}
-
-			};
-
-			var oblique = {
-
-				gx: function(scale, zc) {
-					return function(vertex) {
-						return (vertex.x() + vertex.z() * zc) * scale;
-					};
-				},
-
-				gy: function(scale, zc) {
-					return function(vertex) {
-						return (vertex.y() + vertex.z() * zc) * scale;
-					};
-				}
-
-			};
-
-			var isometric = {
-
-				gx: function(scale, c) {
-					return function(vertex) {
-						return (vertex.x() * c + vertex.z() * c) * scale;
-					};
-				},
-
-				gy: function(scale, c) {
-					return function(vertex) {
-						return (vertex.y() + vertex.z() * c - vertex.x() * c) * scale;
-					};
-				}
-
-			}
-
-			function drawPolygon2(context, polygon, matrix, fx, fy) {
-				context.beginPath();
-				var vertex = Vertex.transform(polygon.vertex(0), matrix);
-				context.moveTo(fx(vertex), -1 * fy(vertex));
-				for (var i = 1; i < polygon.count(); ++i) {
-					vertex = Vertex.transform(polygon.vertex(i), matrix);
-					context.lineTo(fx(vertex), -1 * fy(vertex));
-				}
-				context.closePath();
-				context.stroke();
-			}
-
-			Vertex.transform = function(vertex, matrix) {
-				return Vertex.fromVec3(
-					matrix.multiply(
-						Vertex.toVec3(vertex)
-					)
-				);
-			};
-
-			function Vec3(elements) {
-
-				if (elements.length !== 3) {
-					throw new Error('Vec3 must have 3 elements');
-				}
-
-				this.element = function(i) {
-
-					if (i < 0 || i > 2) {
-						throw new Error('i must be in the range 0 - 2');
-					}
-
-					return elements[i];
-
-				};
-
-				this.multiply = function(matrix) {
-
-					if (!(matrix instanceof Mat3)) {
-						throw new Error('matrix must be a Mat3');
-					}
-
-					return matrix.multiply(this);
-
-				}
-
-			}
-
-			Vertex.toVec3 = function(vertex) {
-				return new Vec3([vertex.x(), vertex.y(), vertex.z()]);
-			};
-
-			Vertex.fromVec3 = function(vector) {
-				return new Vertex(vector.element(0), vector.element(1), vector.element(2));
-			};
-
-			function Mat3(elements) {
-
-				if (elements.length !== 9) {
-					throw new Error('Mat3 must have 9 elements');
-				}
-
-				this.element = function(x, y) {
-
-					if (x < 0 || x > 2) {
-						throw new Error('x must be in the range 0 -2');
-					}
-
-					if (y < 0 || y > 2) {
-						throw new Error('y must be in the range 0 - 2');
-					}
-
-					return elements[y * 3 + x];
-
-				};
-
-				this.multiply = function(other) {
-
-					if (!(other instanceof Vec3)
-							&& !(other instanceof Mat3)) {
-						throw new Error('vector must be either a Vec3 or Mat3');
-					}
-
-					if (other instanceof Vec3) {
-
-						var elements = [];
-						for (var y = 0; y < 3; ++y) {
-							var sum = 0;
-							for (var x = 0; x < 3; ++x) {
-								sum += other.element(x) * this.element(x, y);
-							}
-							elements.push(sum);
-						}
-
-						return new Vec3(elements);
-					} else {
-
-						var elements = [];
-						for (var z = 0; z < 3; ++z) {
-							for (var y = 0; y < 3; ++y) {
-								var sum = 0;
-								for (var x = 0; x < 3; ++x) {
-									sum += other.element(y, x) * this.element(x, z);
-								}
-								elements.push(sum);
-							}
-						}
-
-						return new Mat3(elements);
-					}
-
-				};
-
-			}
-
-			Mat3.identity = function() {
-				return new Mat3([
-					1.0, 0.0, 0.0,
-					0.0, 1.0, 0.0,
-					0.0, 0.0, 1.0
-				]);
-			}
-
-			Mat3.rotationX = function(angle) {
-				var a = Math.cos(angle);
-				var b = Math.sin(angle);
-				return new Mat3([
-					1.0, 0.0, 0.0,
-					0.0,   a,  -b,
-					0.0,   b,   a,
-				]);
-			};
-
-			Mat3.rotationY = function(angle) {
-				var a = Math.cos(angle);
-				var b = Math.sin(angle);
-				return new Mat3([
-					  a, 0.0,   b,
-					0.0, 1.0, 0.0,
-					 -b, 0.0,   a,
-				]);
-			};
-
-
-			Mat3.rotationZ = function(angle) {
-				var a = Math.cos(angle);
-				var b = Math.sin(angle);
-				return new Mat3([
-					  a,  -b, 0.0,
-					  b,   a, 0.0,
-					0.0, 0.0, 1.0,
-				]);
-			};
-
-			Mat3.isometric = function(angle) {
-				var a = Math.cos(angle);
-				var b = Math.sin(angle);
-				return new Mat3([
-					 a, 0, a,
-					-b, 1, b,
-					 0, 0, 0
-				]);
-			};
-
-			function drawAxisIndicator(context, matrix) {
-
-				context.save();
-
-				context.textBaseline = 'middle';
-				context.textAlign = 'center';
-
-				context.strokeStyle = '#F06';
-				context.fillStyle = '#F06';
-
-				var x = new Vec3([30.0, 0.0, 0.0]).multiply(matrix);
-				context.fillText('X', x.element(0), -1 * x.element(1));
-				drawLineFromVectors(
-					context,
-					new Vec3([0.0, 0.0, 0.0]).multiply(matrix),
-					new Vec3([20.0, 0.0, 0.0]).multiply(matrix)
-				);
-
-				context.strokeStyle = '#F90';
-				context.fillStyle = '#F90';
-
-				var y = new Vec3([0.0, 30.0, 0.0]).multiply(matrix);
-				context.fillText('Y', y.element(0), -1 * y.element(1));
-				drawLineFromVectors(
-					context,
-					new Vec3([0.0, 0.0, 0.0]).multiply(matrix),
-					new Vec3([0.0, 20.0, 0.0]).multiply(matrix)
-				);
-
-				context.strokeStyle = '#09C';
-				context.fillStyle = '#09C';
-
-				var z = new Vec3([0.0, 0.0, 30.0]).multiply(matrix);
-				context.fillText('Z', z.element(0), -1 * z.element(1));
-				drawLineFromVectors(
-					context,
-					new Vec3([0.0, 0.0, 0.0]).multiply(matrix),
-					new Vec3([0.0, 0.0, 20.0]).multiply(matrix)
-				);
-
-				context.restore();
-
-			};
-
-			function drawLineFromVectors(context, a, b) {
-				context.beginPath();
-				context.moveTo(a.element(0), -1 * a.element(1));
-				context.lineTo(b.element(0), -1 * b.element(1));
-				context.stroke();
-			};
-
-			var loop = {
-				fns: [],
-				start: function() {
-					var fns = this.fns;
-					setInterval(function() {
-						for (var i = 0; i < fns.length; ++i) {
-							fns[i]();
-						}
-					}, 25);
-				}
-			}
-
-		</script>
+		<link rel="stylesheet" media="screen" href="css/main.css"/>
+		<script src="js/ga.js" async></script>
+		<script src="js/Vec3.js"></script>
+		<script src="js/Mat3.js"></script>
+		<script src="js/Vertex.js"></script>
+		<script src="js/Polygon.js"></script>
+		<script src="js/oblique.js"></script>
+		<script src="js/orthogonal.js"></script>
+		<script src="js/isometric.js"></script>
+		<script src="js/drawing.js"></script>
+		<script src="js/animation.js"></script>
+		<script src="js/model.js"></script>
 	</head>
 	<body>
 
-		<script>
-
-			var modelVerts1 = [
-				new Vertex(-1.0, -1.0, -1.0), // 0 FBL
-				new Vertex( 1.0, -1.0, -1.0), // 1 FBR
-
-				new Vertex(-1.0, -1.0,  1.0), // 2 RBL
-				new Vertex( 1.0, -1.0,  1.0), // 3 RBR
-				
-				new Vertex(-1.0,  1.0, -1.0), // 4 FTL
-				new Vertex( 1.0,  1.0, -1.0), // 5 FTR
-
-				new Vertex(-1.0,  1.0,  1.0), // 6 RTL
-				new Vertex( 1.0,  1.0,  1.0)  // 7 RTR
-			];
-
-			var modelPolygons1 = [
-				new Polygon([
-					modelVerts1[0],
-					modelVerts1[1],
-					modelVerts1[5],
-					modelVerts1[4]
-				]), // FRONT
-				new Polygon([
-					modelVerts1[2],
-					modelVerts1[3],
-					modelVerts1[7],
-					modelVerts1[6]
-				]), // REAR
-				new Polygon([
-					modelVerts1[0],
-					modelVerts1[1],
-					modelVerts1[3],
-					modelVerts1[2]
-				]), // BOTTOM
-				new Polygon([
-					modelVerts1[4],
-					modelVerts1[5],
-					modelVerts1[7],
-					modelVerts1[6]
-				]), // TOP
-				new Polygon([
-					modelVerts1[0],
-					modelVerts1[2],
-					modelVerts1[6],
-					modelVerts1[4]
-				]), // LEFT
-				new Polygon([
-					modelVerts1[1],
-					modelVerts1[3],
-					modelVerts1[7],
-					modelVerts1[5]
-				])  // RIGHT
-			];
-
-			// Pencil
-			/*var modelVerts2 = [
-				new Vertex( 0.0, -3.0, -0.5 ),
-				new Vertex( 0.5, -3.0, -0.25),
-				new Vertex( 0.5, -3.0,  0.25),
-				new Vertex( 0.0, -3.0,  0.5),
-				new Vertex(-0.5, -3.0,  0.25),
-				new Vertex(-0.5, -3.0, -0.25),
-
-				new Vertex( 0.0,  2.0, -0.5 ),
-				new Vertex( 0.5,  2.0, -0.25),
-				new Vertex( 0.5,  2.0,  0.25),
-				new Vertex( 0.0,  2.0,  0.5),
-				new Vertex(-0.5,  2.0,  0.25),
-				new Vertex(-0.5,  2.0, -0.25),
-
-				new Vertex( 0.0,  3.0,  0.0)
-			];
-
-			var modelPolygons2 = [
-				new Polygon([
-					modelVerts2[0],
-					modelVerts2[1],
-					modelVerts2[2],
-					modelVerts2[3],
-					modelVerts2[4],
-					modelVerts2[5]
-				]),
-
-				new Polygon([
-					modelVerts2[0],
-					modelVerts2[1],
-					modelVerts2[7],
-					modelVerts2[6]
-				]),
-				new Polygon([
-					modelVerts2[1],
-					modelVerts2[2],
-					modelVerts2[8],
-					modelVerts2[7]
-				]),
-				new Polygon([
-					modelVerts2[2],
-					modelVerts2[3],
-					modelVerts2[9],
-					modelVerts2[8]
-				]),
-				new Polygon([
-					modelVerts2[3],
-					modelVerts2[4],
-					modelVerts2[10],
-					modelVerts2[9]
-				]),
-				new Polygon([
-					modelVerts2[4],
-					modelVerts2[5],
-					modelVerts2[11],
-					modelVerts2[10]
-				]),
-				new Polygon([
-					modelVerts2[5],
-					modelVerts2[0],
-					modelVerts2[6],
-					modelVerts2[11]
-				]),
-
-				new Polygon([
-					modelVerts2[6],
-					modelVerts2[7],
-					modelVerts2[12]
-				]),
-				new Polygon([
-					modelVerts2[7],
-					modelVerts2[8],
-					modelVerts2[12]
-				]),
-				new Polygon([
-					modelVerts2[8],
-					modelVerts2[9],
-					modelVerts2[12]
-				]),
-				new Polygon([
-					modelVerts2[9],
-					modelVerts2[10],
-					modelVerts2[12]
-				]),
-				new Polygon([
-					modelVerts2[10],
-					modelVerts2[11],
-					modelVerts2[12]
-				]),
-				new Polygon([
-					modelVerts2[11],
-					modelVerts2[6],
-					modelVerts2[12]
-				])
-			]*/
-
-			modelPolygons = modelPolygons1;
-
-		</script>
-
 		<div class="header">
-			<h1>Projection of Three-Dimensional Models in JavaScript and HTML5 Canvas</h2>
+			<h1>Projection of 3D Models using JavaScript and HTML5 Canvas</h2>
 			<p class="author"><a href="http://stuartwakefield.co.uk">Stuart Wakefield</a> (<a href="https://plus.google.com/u/0/105620785565675144505?rel=author">g+</a>)</p>
 		</div>
+
+		<canvas id="interactive"></canvas>
+		<script src="js/interactive.js"></script>
 
 		<p class="note">This article makes use of SVG images and the HTML canvas element, some older browsers are unable to support these features. Check your browser at <a href="http://html5test.com/">html5test.com</a></p>
 
@@ -503,35 +36,13 @@
 		<h2>Orthogonal projection</h2>
 		<p>This is one of the most basic projection techniques, it simply discards one of the axis information to create a two-dimensional representation of one of the faces, a fancy way of saying sides, of the object.</p>
 		<p>In the following, very interesting, example of a cube, the z-axis information is discarded to show the front face of the object.</p>
+		
 		<canvas id="canvas-1"></canvas>
-		<script>
+		<script src="js/canvas-1.js"></script>
 
-			// Basic scaled projection discarding depth / z value
-			(function() {
-
-				var canvas = document.getElementById('canvas-1');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";
-				canvas.height = "240";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var fx = orthogonal.gx(scale);
-				var fy = orthogonal.gy(scale);
-
-				for (var i = 0; i < modelPolygons.length; ++i) {
-					drawPolygon(context, modelPolygons[i], fx, fy);
-				}
-
-			}) ();
-
-		</script>
 		<p>I won't show the projections for the other faces, you'll just have to imagine what they would look like.</p>
 		<p>First, the vertices. These are the corner points for the cube, at this point there is no sense of scale so all of the values can simply be between -1.0 and 1.0 to keep it simple and easy to scale up later.</p>
+
 		<pre class="code"><code>var vertices = [
   new Vertex(-1.0, -1.0, -1.0), // Front-Bottom-Left
   new Vertex( 1.0, -1.0, -1.0), // Front-Bottom-Right
@@ -542,7 +53,9 @@
   new Vertex(-1.0,  1.0,  1.0), // Rear-Top-Left
   new Vertex( 1.0,  1.0,  1.0)  // Rear-Top-Right
 ];</code></pre>
+
 		<p>The code for a <strong>Vertex</strong> object:</p>
+
 		<pre class="code"><code>function Vertex(x, y, z) {
   this.x = function() {
     return x;
@@ -554,7 +67,9 @@
     return z;
   };
 }</code></pre>
+
 		<p>Then, the vertices are mapped into faces.</p>
+
 		<pre class="code"><code>var faces = [
   new Polygon([vertices[0], vertices[1], vertices[5], vertices[4]]), // Front
   new Polygon([vertices[2], vertices[3], vertices[7], vertices[6]]), // Rear
@@ -563,7 +78,9 @@
   new Polygon([vertices[0], vertices[2], vertices[6], vertices[4]]), // Left
   new Polygon([vertices[1], vertices[3], vertices[7], vertices[5]])  // Right
 ];</code></pre>
+
 		<p>The code for a <strong>Polygon</strong> object:</p>
+
 		<pre class="code"><code>function Polygon(vertices) {
   this.count = function() {
     return vertices.length;
@@ -580,6 +97,7 @@
 }</code></pre>
 
 		<p>The code that runs the rendering.</p>
+
 		<pre class="code"><code>var canvas = document.getElementById('my-canvas');
 var context = canvas.getContext('2d');
 
@@ -601,153 +119,54 @@ for (var i = 0; i &lt; faces.length; ++i) {
 }</code></pre>
 
 		<p>The code that draws the polygons.</p>
+
 		<pre class="code"><code>function drawPolygon(context, polygon, fx, fy) {
   context.beginPath();
 
   // The -1 * is used to flip the y coordinate as y value increases
   // as you move down the canvas.
   context.moveTo(fx(polygon.vertex(0)), -1 * fy(polygon.vertex(0)));
-  for (var i = 1; i < polygon.count(); ++i) {
+  for (var i = 1; i &lt; polygon.count(); ++i) {
     context.lineTo(fx(polygon.vertex(i)), -1 * fy(polygon.vertex(i)));
   }
   context.closePath();
   context.stroke();
 }</code></pre>
+
 		<p>To draw a simple square that was a lot of hard work, this work will pay off later though!</p>
 
 		<h2>Oblique projection</h2>
 		<p>This projection technique is a bit more complicated than the last example, but not by much. The z-axis is represented, to give a feel for the three-dimensional shape. Oblique projection is one form of parallel projection and mathematically can be described as:</p>
 		<img src="oblique-projection.svg" alt="(x,y)=(x+az,y+bz)" class="svg"/>
 		<p>The <strong>a</strong> and <strong>b</strong> terms specify the ratio to apply to <strong>z</strong>, different oblique projections use different ratios.</p>
+		
 		<canvas id="canvas-2"></canvas>
-		<script>
-
-			(function() {
-				
-				var canvas = document.getElementById('canvas-2');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";;
-				canvas.height = "240";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var c = 0.2;
-				var fx = oblique.gx(scale, c);
-				var fy = oblique.gy(scale, c);
-
-				for (var i = 0; i < modelPolygons.length; ++i) {
-					drawPolygon(context, modelPolygons[i], fx, fy);
-				}
-
-			}) ();
-
-		</script>
+		<script src="js/canvas-2.js"></script>
 
 		<h3>Cavalier projection</h3>
 		<p>Cavalier projection is an oblique projection where the z length is preserved.</p>
 		<img src="cavalier-projection.svg" alt="a=cos &theta;,b=sin &theta;,(x,y)=(x+az,y+bz)=(x+z cos &theta;,y+z sin &theta;)" class="svg"/>
 		<p>The following diagram is a Cavalier projection at an angle of 30&deg;.</p>
+		
 		<canvas id="canvas-3"></canvas>
-		<script>
-
-			(function() {
-
-				var canvas = document.getElementById('canvas-3');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";;
-				canvas.height = "320";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var angle = Math.PI / 6; // 30 degrees
-				var a = Math.cos(angle);
-				var b = Math.sin(angle);
-				var fx = oblique.gx(scale, a);
-				var fy = oblique.gy(scale, b);
-
-				for (var i = 0; i < modelPolygons.length; ++i) {
-					drawPolygon(context, modelPolygons[i], fx, fy);
-				}
-
-			}) ();
-
-		</script>
+		<script src="js/canvas-3.js"></script>
 
 		<h3>Cabinet projection</h3>
 		<p>The length along the z axis is shortened by a half or two thirds to provide a more realistic representation of the proportions.</p>
+
 		<img src="cabinet-projection-half.svg" class="svg"/>
 		<canvas id="canvas-4"></canvas>
-		<script>
+		<script src="js/canvas-4.js"></script>
 
-			(function() {
-
-				var canvas = document.getElementById('canvas-4');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";;
-				canvas.height = "320";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var angle = Math.PI / 6; // 30 degrees
-				var a = Math.cos(angle) / 2;
-				var b = Math.sin(angle) / 2;
-				var fx = oblique.gx(scale, a);
-				var fy = oblique.gy(scale, b);
-
-				for (var i = 0; i < modelPolygons.length; ++i) {
-					drawPolygon(context, modelPolygons[i], fx, fy);
-				}
-
-			}) ();
-
-		</script>
 		<img src="cabinet-projection-two-thirds.svg" class="svg"/>
 		<canvas id="canvas-5"></canvas>
-		<script>
-
-			(function() {
-
-				var canvas = document.getElementById('canvas-5');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";;
-				canvas.height = "320";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var angle = Math.PI / 6; // 30 degrees
-				var a = Math.cos(angle) * 2 / 3;
-				var b = Math.sin(angle) * 2 / 3;
-				var fx = oblique.gx(scale, a);
-				var fy = oblique.gy(scale, b);
-
-				for (var i = 0; i < modelPolygons.length; ++i) {
-					drawPolygon(context, modelPolygons[i], fx, fy);
-				}
-
-			}) ();
-
-		</script>
+		<script src="js/canvas-5.js"></script>
 
 		<h2>Axonometric projection</h2>
 		<h3>Isometric projection</h3>
 		<img src="isometric-projection.svg" class="svg"/>
 		<p>The math expression above expressed in JavaScript:</p>
+
 		<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
 var b = Math.sin(angle);
 var fx = function(vertex) {
@@ -756,40 +175,16 @@ var fx = function(vertex) {
 var fy = function(vertex) {
   return vertex.y() + vertex.z() * b - vertex.x() * b;
 };</code></pre>
+
 		<p>The resulting projection:</p>
+
 		<canvas id="canvas-6"></canvas>
-		<script>
+		<script src="js/canvas-6.js"></script>
 
-			(function() {
-
-				var canvas = document.getElementById('canvas-6');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";;
-				canvas.height = "320";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var angle = Math.PI / 6; // 30 degrees
-				var a = Math.cos(angle);
-				var b = Math.sin(angle);
-
-				var fx = isometric.gx(scale, a);
-				var fy = isometric.gy(scale, b);
-
-				for (var i = 0; i < modelPolygons.length; ++i) {
-					drawPolygon(context, modelPolygons[i], fx, fy);
-				}
-
-			}) ();
-
-		</script>
 		<p>Projection can also be expressed more elegantly using a transformation matrix.</p>
 		<img src="isometric-projection-matrix.svg" class="svg"/>
 		<p>The matrix is created using a simple Matrix class that supports 3 &times; 3 matrices:</p>
+
 		<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
 var b = Math.sin(angle);
 return new Mat3([
@@ -797,204 +192,29 @@ return new Mat3([
   -b, 1, b,
    0, 0, 0
 ]);</code></pre>
+
 		<p>The resulting projection:</p>
+
 		<canvas id="canvas-6a"></canvas>
-		<script>
-
-			(function() {
-
-				var canvas = document.getElementById('canvas-6a');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";;
-				canvas.height = "320";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var angle = Math.PI / 6; // 30 degrees
-				var transform = Mat3.isometric(angle);
-
-				var fx = function(vertex) { return vertex.x() * scale; };
-				var fy = function(vertex) { return vertex.y() * scale; };
-
-				for (var i = 0; i < modelPolygons.length; ++i) {
-					drawPolygon2(context, modelPolygons[i], transform, fx, fy);
-				}
-
-			}) ();
-
-		</script>
+		<script src="js/canvas-6a.js"></script>
 
 		<h2>Rotation transformations</h2>
 		<p>Using a matrix</p>
+		
 		<img src="rotation-transform-matrices.svg" class="svg"/>
 		<canvas id="canvas-7"></canvas>
-		<script>
+		<script src="js/canvas-7.js"></script>
 
-			(function() {
-
-				var canvas = document.getElementById('canvas-7');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";;
-				canvas.height = "240";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var step = 0;
-
-				loop.fns.push(function() {
-					context.clearRect(- canvas.width / 2, - canvas.height / 2, canvas.width, canvas.height);
-					var transform = Mat3.rotationX(Math.PI * step++ / 128);
-
-					var fx = function(vertex) {
-						return vertex.x() * scale;
-					};
-
-					var fy = function(vertex) {
-						return vertex.y() * scale;
-					};
-
-					drawAxisIndicator(context, transform);
-
-					for (var i = 0; i < modelPolygons.length; ++i) {
-						drawPolygon2(context, modelPolygons[i], transform, fx, fy);
-					}
-				});
-
-			}) ();
-
-		</script>
 		<canvas id="canvas-8"></canvas>
-		<script>
+		<script src="js/canvas-8.js"></script>
 
-			(function() {
-
-				var canvas = document.getElementById('canvas-8');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";;
-				canvas.height = "240";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var step = 0;
-
-				loop.fns.push(function() {
-					context.clearRect(- canvas.width / 2, - canvas.height / 2, canvas.width, canvas.height);
-					var transform = Mat3.rotationY(Math.PI * step++ / 128);
-
-					var fx = function(vertex) {
-						return vertex.x() * scale;
-					};
-
-					var fy = function(vertex) {
-						return vertex.y() * scale;
-					};
-
-					drawAxisIndicator(context, transform);
-
-					for (var i = 0; i < modelPolygons.length; ++i) {
-						drawPolygon2(context, modelPolygons[i], transform, fx, fy);
-					}
-				});
-
-			}) ();
-
-		</script>
 		<canvas id="canvas-9"></canvas>
-		<script>
+		<script src="js/canvas-9.js"></script>
 
-			(function() {
-
-				var canvas = document.getElementById('canvas-9');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";
-				canvas.height = "240";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var step = 0;
-
-				loop.fns.push(function() {
-					context.clearRect(- canvas.width / 2, - canvas.height / 2, canvas.width, canvas.height);
-					var transform = Mat3.rotationZ(Math.PI * step++ / 128);
-
-					var fx = function(vertex) {
-						return vertex.x() * scale;
-					};
-
-					var fy = function(vertex) {
-						return vertex.y() * scale;
-					};
-
-					drawAxisIndicator(context, transform);
-
-					for (var i = 0; i < modelPolygons.length; ++i) {
-						drawPolygon2(context, modelPolygons[i], transform, fx, fy);
-					}
-				});
-
-			}) ();
-
-		</script>
 		<p>Translation around multiple axis can be achieved simply by multiplying rotation matrices together to produce the transform matrix, which creates a traditional, roll, pitch, yaw rotation model.</p>
 		<img src="general-rotation-through-multiplication.svg" class="svg"/>
 		<canvas id="canvas-10"></canvas>
-		<script>
-
-			(function() {
-
-				var canvas = document.getElementById('canvas-10');
-				var context = canvas.getContext('2d');
-
-				canvas.width = "640";;
-				canvas.height = "320";
-
-				context.translate(canvas.width / 2, canvas.height / 2); // 0 should be in the centre
-				context.strokeStyle = '#222222';
-
-				var modelSize = canvas.width / 4;
-				var scale = modelSize / 2;
-				var step = 0;
-
-				loop.fns.push(function() {
-					context.clearRect(- canvas.width / 2, - canvas.height / 2, canvas.width, canvas.height);
-					var transform = Mat3.rotationZ(Math.PI * step / 128)
-						.multiply(Mat3.rotationY(Math.PI * step / 256))
-						.multiply(Mat3.rotationX(Math.PI * step++ / 512));
-
-					var fx = function(vertex) {
-						return vertex.x() * scale;
-					};
-
-					var fy = function(vertex) {
-						return vertex.y() * scale;
-					};
-
-					drawAxisIndicator(context, transform);
-
-					for (var i = 0; i < modelPolygons.length; ++i) {
-						drawPolygon2(context, modelPolygons[i], transform, fx, fy);
-					}
-				});
-
-			}) ();
-
-		</script>
+		<script src="js/canvas-10.js"></script>
 		<script>loop.start();</script>
 
 		<!--<p>Next:</p>

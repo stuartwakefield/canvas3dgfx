@@ -1,11 +1,10 @@
 body {
 	margin: 0 auto;
 	padding: 40% 2em 2em;
-	background: #eeeeee;
 	max-width: 640px;
 	font: 1em / 1.5em Calibri, Arial, Tahoma, Verdana, sans-serif;
 	color: #222222;
-	background: url('bg.jpg') top center no-repeat;
+	background: url('../img/bg.jpg') top center no-repeat;
 	background-size: contain;
 }
 
@@ -14,7 +13,7 @@ h1, h2 {
 }
 
 h1 {
-	font-size: 2em;
+	font-size: 3em;
 	line-height: 1.5em;
 	margin: 1em 0;
 }
@@ -48,18 +47,21 @@ a:focus {
 }
 
 .header {
-	margin: 5em 0;
+	margin: 5em 0 2em;
 	text-align: center;
 }
 
 .svg {
-	width: 100%;
+	margin: 2em;
 }
 
 .code {
-	font: 1.25em / 1.5 "Courier New", courier, monospace;
+	font: 1em / 1.5 "Courier New", courier, monospace;
 	overflow-x: auto;
-	padding: 1em 0;
+	padding: 1em;
+	background: #f8f8f8;
+	color: #777788;
+	border-radius: 4px;
 }
 
 .note {
@@ -69,12 +71,7 @@ a:focus {
 	text-align: center;
 	color: #652;
 }
-.code {
-	padding: 1em;
-	background: #f8f8f8;
-	border-top: 1px solid #dddddd;
-	border-bottom: 1px solid #dddddd;
-}
+
 code > .keyword,
 code > .storage {
 	color: #F06;

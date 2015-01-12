@@ -16,7 +16,9 @@
 	var x = 0, y = 0;
 	var decay = 0.98;
 
-	canvas.addEventListener('mousemove', function(e) {
+	var move = function(e) {
+		e.preventDefault();
+		
 		var mouseX = e.pageX;
 		var mouseY = e.pageY;
 		var canvasX = canvas.offsetLeft;
@@ -31,12 +33,18 @@
 		}
 		lx = px;
 		ly = py;
-	});
+	};
 
-	canvas.addEventListener('mouseleave', function(e) {
+	var leave = function() {
 		lx = null;
 		ly = null;
-	});
+	};
+
+	canvas.addEventListener('mousemove', move);
+	canvas.addEventListener('touchmove', move);
+
+	canvas.addEventListener('mouseleave', leave);
+	canvas.addEventListener('touchend', leave);
 
 	loop.fns.push(function() {
 

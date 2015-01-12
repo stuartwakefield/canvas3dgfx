@@ -11,14 +11,14 @@
 
 	var modelSize = canvas.width / 4;
 	var scale = modelSize / 2;
-	var cx = 0, cy = 0;
+	var cx = 0.001, cy = 0.001;
 	var lx = null, ly = null;
 	var x = 0, y = 0;
 	var decay = 0.98;
 
 	var move = function(e) {
 		e.preventDefault();
-		
+
 		var mouseX = e.pageX;
 		var mouseY = e.pageY;
 		var canvasX = canvas.offsetLeft;

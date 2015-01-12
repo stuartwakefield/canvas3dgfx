@@ -137,7 +137,7 @@ for (var i = 0; i &lt; faces.length; ++i) {
 
 		<h2>Oblique projection</h2>
 		<p>This projection technique is a bit more complicated than the last example, but not by much. The z-axis is represented, to give a feel for the three-dimensional shape. Oblique projection is one form of parallel projection and mathematically can be described as:</p>
-		<img src="oblique-projection.svg" alt="(x,y)=(x+az,y+bz)" class="svg"/>
+		<img src="img/oblique-projection.svg" alt="(x,y)=(x+az,y+bz)" class="svg"/>
 		<p>The <strong>a</strong> and <strong>b</strong> terms specify the ratio to apply to <strong>z</strong>, different oblique projections use different ratios.</p>
 		
 		<canvas id="canvas-2"></canvas>
@@ -145,7 +145,7 @@ for (var i = 0; i &lt; faces.length; ++i) {
 
 		<h3>Cavalier projection</h3>
 		<p>Cavalier projection is an oblique projection where the z length is preserved.</p>
-		<img src="cavalier-projection.svg" alt="a=cos &theta;,b=sin &theta;,(x,y)=(x+az,y+bz)=(x+z cos &theta;,y+z sin &theta;)" class="svg"/>
+		<img src="img/cavalier-projection.svg" alt="a=cos &theta;,b=sin &theta;,(x,y)=(x+az,y+bz)=(x+z cos &theta;,y+z sin &theta;)" class="svg"/>
 		<p>The following diagram is a Cavalier projection at an angle of 30&deg;.</p>
 		
 		<canvas id="canvas-3"></canvas>
@@ -154,17 +154,17 @@ for (var i = 0; i &lt; faces.length; ++i) {
 		<h3>Cabinet projection</h3>
 		<p>The length along the z axis is shortened by a half or two thirds to provide a more realistic representation of the proportions.</p>
 
-		<img src="cabinet-projection-half.svg" class="svg"/>
+		<img src="img/cabinet-projection-half.svg" class="svg"/>
 		<canvas id="canvas-4"></canvas>
 		<script src="js/canvas-4.js"></script>
 
-		<img src="cabinet-projection-two-thirds.svg" class="svg"/>
+		<img src="img/cabinet-projection-two-thirds.svg" class="svg"/>
 		<canvas id="canvas-5"></canvas>
 		<script src="js/canvas-5.js"></script>
 
 		<h2>Axonometric projection</h2>
 		<h3>Isometric projection</h3>
-		<img src="isometric-projection.svg" class="svg"/>
+		<img src="img/isometric-projection.svg" class="svg"/>
 		<p>The math expression above expressed in JavaScript:</p>
 
 		<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
@@ -182,7 +182,7 @@ var fy = function(vertex) {
 		<script src="js/canvas-6.js"></script>
 
 		<p>Projection can also be expressed more elegantly using a transformation matrix.</p>
-		<img src="isometric-projection-matrix.svg" class="svg"/>
+		<img src="img/isometric-projection-matrix.svg" class="svg"/>
 		<p>The matrix is created using a simple Matrix class that supports 3 &times; 3 matrices:</p>
 
 		<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
@@ -201,7 +201,7 @@ return new Mat3([
 		<h2>Rotation transformations</h2>
 		<p>Using a matrix</p>
 		
-		<img src="rotation-transform-matrices.svg" class="svg"/>
+		<img src="img/rotation-transform-matrices.svg" class="svg"/>
 		<canvas id="canvas-7"></canvas>
 		<script src="js/canvas-7.js"></script>
 
@@ -212,7 +212,7 @@ return new Mat3([
 		<script src="js/canvas-9.js"></script>
 
 		<p>Translation around multiple axis can be achieved simply by multiplying rotation matrices together to produce the transform matrix, which creates a traditional, roll, pitch, yaw rotation model.</p>
-		<img src="general-rotation-through-multiplication.svg" class="svg"/>
+		<img src="img/general-rotation-through-multiplication.svg" class="svg"/>
 		<canvas id="canvas-10"></canvas>
 		<script src="js/canvas-10.js"></script>
 		<script>loop.start();</script>

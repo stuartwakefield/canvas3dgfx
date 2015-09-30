@@ -22,8 +22,11 @@
 	<body>
 
 		<div class="header">
-			<h1>Projection of 3D Models using JavaScript and HTML5 Canvas</h2>
-			<p class="author"><a href="http://stuartwakefield.co.uk">Stuart Wakefield</a> (<a href="https://plus.google.com/u/0/105620785565675144505?rel=author">g+</a>)</p>
+			<h1>Projection of 3D Models using JavaScript and HTML5 Canvas</h1>
+			<p class="author">
+				<a href="http://stuartwakefield.co.uk">Stuart Wakefield</a>
+				(<a href="https://plus.google.com/u/0/105620785565675144505?rel=author">g+</a>)
+			</p>
 		</div>
 
 		<canvas id="interactive"></canvas>
@@ -36,7 +39,7 @@
 		<h2>Orthogonal projection</h2>
 		<p>This is one of the most basic projection techniques, it simply discards one of the axis information to create a two-dimensional representation of one of the faces, a fancy way of saying sides, of the object.</p>
 		<p>In the following, very interesting, example of a cube, the z-axis information is discarded to show the front face of the object.</p>
-		
+
 		<canvas id="canvas-1"></canvas>
 		<script src="js/canvas-1.js"></script>
 
@@ -139,7 +142,7 @@ for (var i = 0; i &lt; faces.length; ++i) {
 		<p>This projection technique is a bit more complicated than the last example, but not by much. The z-axis is represented, to give a feel for the three-dimensional shape. Oblique projection is one form of parallel projection and mathematically can be described as:</p>
 		<img src="img/oblique-projection.svg" alt="(x,y)=(x+az,y+bz)" class="svg"/>
 		<p>The <strong>a</strong> and <strong>b</strong> terms specify the ratio to apply to <strong>z</strong>, different oblique projections use different ratios.</p>
-		
+
 		<canvas id="canvas-2"></canvas>
 		<script src="js/canvas-2.js"></script>
 
@@ -147,7 +150,7 @@ for (var i = 0; i &lt; faces.length; ++i) {
 		<p>Cavalier projection is an oblique projection where the z length is preserved.</p>
 		<img src="img/cavalier-projection.svg" alt="a=cos &theta;,b=sin &theta;,(x,y)=(x+az,y+bz)=(x+z cos &theta;,y+z sin &theta;)" class="svg"/>
 		<p>The following diagram is a Cavalier projection at an angle of 30&deg;.</p>
-		
+
 		<canvas id="canvas-3"></canvas>
 		<script src="js/canvas-3.js"></script>
 
@@ -200,7 +203,7 @@ return new Mat3([
 
 		<h2>Rotation transformations</h2>
 		<p>Using a matrix</p>
-		
+
 		<img src="img/rotation-transform-matrices.svg" class="svg"/>
 		<canvas id="canvas-7"></canvas>
 		<script src="js/canvas-7.js"></script>

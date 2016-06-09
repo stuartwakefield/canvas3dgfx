@@ -1,0 +1,32 @@
+{
+  "name": "canvas3dgfx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r babel-core/register build.js",
+    "test": "mocha -r babel-core/register",
+    "preinstall": "node -r babel-core/register build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stuartwakefield/canvas3dgfx.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stuartwakefield/canvas3dgfx/issues"
+  },
+  "homepage": "https://github.com/stuartwakefield/canvas3dgfx#readme",
+  "dependencies": {
+    "babel-core": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0",
+    "highland": "^2.8.1",
+    "highlight": "^0.2.4",
+    "highlight.js": "^9.4.0",
+    "marked": "^0.3.5",
+    "mustache": "^2.2.1",
+    "node-syntaxhighlighter": "^0.8.1",
+    "peacock": "^0.2.0"
+  }
+}

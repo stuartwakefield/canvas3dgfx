@@ -32,21 +32,49 @@
 		<canvas id="interactive"></canvas>
 		<script src="js/interactive.js"></script>
 
-		<p class="note">This article makes use of SVG images and the HTML canvas element, some older browsers are unable to support these features. Check your browser at <a href="http://html5test.com/">html5test.com</a></p>
+		<p class="note">
+			This article makes use of SVG images and the HTML canvas element, some
+			older browsers are unable to support these features. Check your browser
+			at <a href="http://html5test.com/">html5test.com</a>
 
-		<p>Imagine you are in a situation where you have a <abbr title="three-dimensional">3D</abbr> object you want to display. There are a number of ways this object can be displayed, I'm going to run you through the <abbr title="mathematics">maths</abbr> and code to do so.</p>
+		<p>
+			Imagine you are in a situation where you have a
+			<abbr title="three-dimensional">3D</abbr> object you want to display.
+			There are a number of ways this object can be displayed, I'm going to
+			run you through the <abbr title="mathematics">maths</abbr> and code to
+			do so.
 
 		<h2>Orthogonal projection</h2>
-		<p>This is one of the most basic projection techniques, it simply discards one of the axis information to create a two-dimensional representation of one of the faces, a fancy way of saying sides, of the object.</p>
-		<p>In the following, very interesting, example of a cube, the z-axis information is discarded to show the front face of the object.</p>
 
 		<canvas id="canvas-1"></canvas>
 		<script src="js/canvas-1.js"></script>
 
-		<p>I won't show the projections for the other faces, you'll just have to imagine what they would look like.</p>
-		<p>First, the vertices. These are the corner points for the cube, at this point there is no sense of scale so all of the values can simply be between -1.0 and 1.0 to keep it simple and easy to scale up later.</p>
+		<p>
+			This is one of the most basic projection techniques, it simply discards
+			one of the axis information to create a two-dimensional representation
+			of one of the faces, a fancy way of saying sides, of the object.
 
-		<pre class="code"><code>var vertices = [
+		<p>
+			In the following, very interesting, example of a cube, the z-axis
+			information is discarded to show the front face of the object.
+
+		<div class="steps">
+
+			<section class="step">
+				<pre class="code"><code>class Vertex {
+  constructor (x, y, z) {
+    this.x = x
+    this.y = y
+    this.z = z
+  }
+}</code></pre>
+				<h3 class="step-num">Start</h3>
+				<p>
+					The code for a <strong>Vertex</strong> object:
+			</section>
+
+			<section class="step">
+				<pre class="code"><code>var vertices = [
   new Vertex(-1.0, -1.0, -1.0), // Front-Bottom-Left
   new Vertex( 1.0, -1.0, -1.0), // Front-Bottom-Right
   new Vertex(-1.0, -1.0,  1.0), // Rear-Bottom-Left
@@ -56,24 +84,18 @@
   new Vertex(-1.0,  1.0,  1.0), // Rear-Top-Left
   new Vertex( 1.0,  1.0,  1.0)  // Rear-Top-Right
 ];</code></pre>
+				<h3 class="step-num">2</h3>
+				<p>
+					First, the vertices. These are the corner points for the cube, at this
+					point there is no sense of scale so all of the values can simply be
+					between -1.0 and 1.0 to keep it simple and easy to scale up later.
+			</section>
 
-		<p>The code for a <strong>Vertex</strong> object:</p>
+			<section class="step">
+			<p>
+				Then, the vertices are mapped into faces.
 
-		<pre class="code"><code>function Vertex(x, y, z) {
-  this.x = function() {
-    return x;
-  };
-  this.y = function() {
-    return y;
-  };
-  this.z = function() {
-    return z;
-  };
-}</code></pre>
-
-		<p>Then, the vertices are mapped into faces.</p>
-
-		<pre class="code"><code>var faces = [
+			<pre class="code"><code>var faces = [
   new Polygon([vertices[0], vertices[1], vertices[5], vertices[4]]), // Front
   new Polygon([vertices[2], vertices[3], vertices[7], vertices[6]]), // Rear
   new Polygon([vertices[0], vertices[1], vertices[3], vertices[2]]), // Bottom
@@ -82,9 +104,15 @@
   new Polygon([vertices[1], vertices[3], vertices[7], vertices[5]])  // Right
 ];</code></pre>
 
-		<p>The code for a <strong>Polygon</strong> object:</p>
+			<!-- DONE TO HERE -->
 
-		<pre class="code"><code>function Polygon(vertices) {
+			</section>
+
+			<section class="step">
+			<p>
+				The code for a <strong>Polygon</strong> object:
+
+			<pre class="code"><code>function Polygon(vertices) {
   this.count = function() {
     return vertices.length;
   };
@@ -98,10 +126,13 @@
     return vertices[i];
   };
 }</code></pre>
+			</section>
 
-		<p>The code that runs the rendering.</p>
+			<section class="step">
+			<p>
+				The code that runs the rendering.
 
-		<pre class="code"><code>var canvas = document.getElementById('my-canvas');
+			<pre class="code"><code>var canvas = document.getElementById('my-canvas');
 var context = canvas.getContext('2d');
 
 // Make the cube half the width of the canvas
@@ -120,10 +151,13 @@ context.translate(canvas.width / 2, canvas.height / 2);
 for (var i = 0; i &lt; faces.length; ++i) {
   drawPolygon(context, faces[i], fx, fy);
 }</code></pre>
+			</section>
 
-		<p>The code that draws the polygons.</p>
+			<section class="step">
+			<p>
+				The code that draws the polygons.
 
-		<pre class="code"><code>function drawPolygon(context, polygon, fx, fy) {
+			<pre class="code"><code>function drawPolygon(context, polygon, fx, fy) {
   context.beginPath();
 
   // The -1 * is used to flip the y coordinate as y value increases
@@ -135,42 +169,51 @@ for (var i = 0; i &lt; faces.length; ++i) {
   context.closePath();
   context.stroke();
 }</code></pre>
+			</section>
 
-		<p>To draw a simple square that was a lot of hard work, this work will pay off later though!</p>
+			<section class="step">
 
-		<h2>Oblique projection</h2>
-		<p>This projection technique is a bit more complicated than the last example, but not by much. The z-axis is represented, to give a feel for the three-dimensional shape. Oblique projection is one form of parallel projection and mathematically can be described as:</p>
-		<img src="img/oblique-projection.svg" alt="(x,y)=(x+az,y+bz)" class="svg"/>
-		<p>The <strong>a</strong> and <strong>b</strong> terms specify the ratio to apply to <strong>z</strong>, different oblique projections use different ratios.</p>
+			<p>
+				To draw a simple square that was a lot of hard work, this work will pay
+				off later though!
 
-		<canvas id="canvas-2"></canvas>
-		<script src="js/canvas-2.js"></script>
+			</section>
 
-		<h3>Cavalier projection</h3>
-		<p>Cavalier projection is an oblique projection where the z length is preserved.</p>
-		<img src="img/cavalier-projection.svg" alt="a=cos &theta;,b=sin &theta;,(x,y)=(x+az,y+bz)=(x+z cos &theta;,y+z sin &theta;)" class="svg"/>
-		<p>The following diagram is a Cavalier projection at an angle of 30&deg;.</p>
+		</div>
 
-		<canvas id="canvas-3"></canvas>
-		<script src="js/canvas-3.js"></script>
+			<h2>Oblique projection</h2>
+			<p>This projection technique is a bit more complicated than the last example, but not by much. The z-axis is represented, to give a feel for the three-dimensional shape. Oblique projection is one form of parallel projection and mathematically can be described as:</p>
+			<img src="img/oblique-projection.svg" alt="(x,y)=(x+az,y+bz)" class="svg"/>
+			<p>The <strong>a</strong> and <strong>b</strong> terms specify the ratio to apply to <strong>z</strong>, different oblique projections use different ratios.</p>
 
-		<h3>Cabinet projection</h3>
-		<p>The length along the z axis is shortened by a half or two thirds to provide a more realistic representation of the proportions.</p>
+			<canvas id="canvas-2"></canvas>
+			<script src="js/canvas-2.js"></script>
 
-		<img src="img/cabinet-projection-half.svg" class="svg"/>
-		<canvas id="canvas-4"></canvas>
-		<script src="js/canvas-4.js"></script>
+			<h3>Cavalier projection</h3>
+			<p>Cavalier projection is an oblique projection where the z length is preserved.</p>
+			<img src="img/cavalier-projection.svg" alt="a=cos &theta;,b=sin &theta;,(x,y)=(x+az,y+bz)=(x+z cos &theta;,y+z sin &theta;)" class="svg"/>
+			<p>The following diagram is a Cavalier projection at an angle of 30&deg;.</p>
 
-		<img src="img/cabinet-projection-two-thirds.svg" class="svg"/>
-		<canvas id="canvas-5"></canvas>
-		<script src="js/canvas-5.js"></script>
+			<canvas id="canvas-3"></canvas>
+			<script src="js/canvas-3.js"></script>
 
-		<h2>Axonometric projection</h2>
-		<h3>Isometric projection</h3>
-		<img src="img/isometric-projection.svg" class="svg"/>
-		<p>The math expression above expressed in JavaScript:</p>
+			<h3>Cabinet projection</h3>
+			<p>The length along the z axis is shortened by a half or two thirds to provide a more realistic representation of the proportions.</p>
 
-		<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
+			<img src="img/cabinet-projection-half.svg" class="svg"/>
+			<canvas id="canvas-4"></canvas>
+			<script src="js/canvas-4.js"></script>
+
+			<img src="img/cabinet-projection-two-thirds.svg" class="svg"/>
+			<canvas id="canvas-5"></canvas>
+			<script src="js/canvas-5.js"></script>
+
+			<h2>Axonometric projection</h2>
+			<h3>Isometric projection</h3>
+			<img src="img/isometric-projection.svg" class="svg"/>
+			<p>The math expression above expressed in JavaScript:</p>
+
+			<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
 var b = Math.sin(angle);
 var fx = function(vertex) {
   return vertex.x() * a + vertex.z() * a;
@@ -179,16 +222,16 @@ var fy = function(vertex) {
   return vertex.y() + vertex.z() * b - vertex.x() * b;
 };</code></pre>
 
-		<p>The resulting projection:</p>
+			<p>The resulting projection:</p>
 
-		<canvas id="canvas-6"></canvas>
-		<script src="js/canvas-6.js"></script>
+			<canvas id="canvas-6"></canvas>
+			<script src="js/canvas-6.js"></script>
 
-		<p>Projection can also be expressed more elegantly using a transformation matrix.</p>
-		<img src="img/isometric-projection-matrix.svg" class="svg"/>
-		<p>The matrix is created using a simple Matrix class that supports 3 &times; 3 matrices:</p>
+			<p>Projection can also be expressed more elegantly using a transformation matrix.</p>
+			<img src="img/isometric-projection-matrix.svg" class="svg"/>
+			<p>The matrix is created using a simple Matrix class that supports 3 &times; 3 matrices:</p>
 
-		<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
+			<pre class="code"><code data-language="javascript">var a = Math.cos(angle);
 var b = Math.sin(angle);
 return new Mat3([
    a, 0, a,
@@ -196,29 +239,31 @@ return new Mat3([
    0, 0, 0
 ]);</code></pre>
 
-		<p>The resulting projection:</p>
+			<p>The resulting projection:</p>
 
-		<canvas id="canvas-6a"></canvas>
-		<script src="js/canvas-6a.js"></script>
+			<canvas id="canvas-6a"></canvas>
+			<script src="js/canvas-6a.js"></script>
 
-		<h2>Rotation transformations</h2>
-		<p>Using a matrix</p>
+			<h2>Rotation transformations</h2>
+			<p>Using a matrix</p>
 
-		<img src="img/rotation-transform-matrices.svg" class="svg"/>
-		<canvas id="canvas-7"></canvas>
-		<script src="js/canvas-7.js"></script>
+			<img src="img/rotation-transform-matrices.svg" class="svg"/>
+			<canvas id="canvas-7"></canvas>
+			<script src="js/canvas-7.js"></script>
 
-		<canvas id="canvas-8"></canvas>
-		<script src="js/canvas-8.js"></script>
+			<canvas id="canvas-8"></canvas>
+			<script src="js/canvas-8.js"></script>
 
-		<canvas id="canvas-9"></canvas>
-		<script src="js/canvas-9.js"></script>
+			<canvas id="canvas-9"></canvas>
+			<script src="js/canvas-9.js"></script>
 
-		<p>Translation around multiple axis can be achieved simply by multiplying rotation matrices together to produce the transform matrix, which creates a traditional, roll, pitch, yaw rotation model.</p>
-		<img src="img/general-rotation-through-multiplication.svg" class="svg"/>
-		<canvas id="canvas-10"></canvas>
-		<script src="js/canvas-10.js"></script>
-		<script>loop.start();</script>
+			<p>Translation around multiple axis can be achieved simply by multiplying rotation matrices together to produce the transform matrix, which creates a traditional, roll, pitch, yaw rotation model.</p>
+			<img src="img/general-rotation-through-multiplication.svg" class="svg"/>
+			<canvas id="canvas-10"></canvas>
+			<script src="js/canvas-10.js"></script>
+			<script>loop.start();</script>
+
+		</div>
 
 		<h2>Bibliography</h2>
 		<ul>

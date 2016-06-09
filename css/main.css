@@ -1,7 +1,5 @@
 body {
-	margin: 0 auto;
 	padding: 2em;
-	max-width: 640px;
 	font: 1.25em / 1.5em Calibri, Arial, Tahoma, Verdana, sans-serif;
 	color: #222222;
 }
@@ -23,6 +21,28 @@ h2 {
 	padding-top: 2em;
 	margin: 1em 0;
 	border-top: 1px solid #dddddd;
+}
+
+.steps {
+	columns: 3 20em;
+	column-gap: 2em;
+	font-size: 0.75em;
+	line-height: 1.5;
+}
+
+.step {
+	break-inside: avoid;
+}
+
+.step .step-num {
+	float: left;
+	margin: 0;
+	font-size: 0.75em;
+	line-height: 1.5;
+	padding: 0.25em 0.5em;
+	margin-right: 0.5em;
+	background: #d33;
+	color: #fff;
 }
 
 canvas {
@@ -56,39 +76,39 @@ a:focus {
 	margin: 2em;
 }
 
-.code {
-	font: 1em / 1.5 "Courier New", courier, monospace;
-	overflow-x: auto;
-	padding: 1em;
-	background: #f8f8f8;
-	color: #777788;
-	border-radius: 4px;
-}
-
 .note {
+	font-size: 0.75em;
+	line-height: 1.5;
 	background: #FFC;
-	border: 1px solid #ED9;
+
 	padding: 1em;
 	text-align: center;
 	color: #652;
 }
 
-code > .keyword,
-code > .storage {
-	color: #F06;
-	font-weight: bold;
+.code {
+	font: 0.5em / 1.5 "Courier New", courier, monospace;
+	overflow-x: auto;
+	padding: 1em;
+	background: #f8f8f8;
+	color: #777788;
+	border-radius: 4px;
+	margin: 2em 0;
 }
-code > .operator {
-	color: inherit;
-	font-weight: inherit;
+
+.hljs-keyword {
+	color: #a6a;
 }
-code > .call,
-code > .method {
-	color: #09C;
+.hljs-title {
+	color: #f60;
 }
-code > .comment {
+.hljs-comment {
 	color: #999;
+	font-style: italic;
 }
-code > .string {
+.hljs-number {
 	color: #F90;
+}
+.hljs-string {
+	color: #8a6;
 }

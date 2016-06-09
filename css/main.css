@@ -43,6 +43,7 @@ h2 {
 	margin-right: 0.5em;
 	background: #d33;
 	color: #fff;
+	text-transform: uppercase;
 }
 
 canvas {

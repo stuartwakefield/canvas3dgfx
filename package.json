@@ -28,5 +28,8 @@
     "mustache": "^2.2.1",
     "node-syntaxhighlighter": "^0.8.1",
     "peacock": "^0.2.0"
+  },
+  "devDependencies": {
+    "babel-preset-es2017": "^1.4.0"
   }
 }
